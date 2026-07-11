@@ -80,8 +80,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ ok: false, error: 'error_central' })
   }
 
-  if (rpcResult?.ya_existe) return res.status(200).json({ ok: true, ya_existe: true })
-
   const serviceKey = process.env.SUPABASE_SERVICE_KEY
   if (serviceKey) {
     const supaAdmin = createClient(supabaseUrl, serviceKey)
@@ -92,6 +90,8 @@ export default async function handler(req, res) {
       valid_until: validUntil.toISOString(),
     }, { onConflict: 'user_id' })
   }
+
+  if (rpcResult?.ya_existe) return res.status(200).json({ ok: true, ya_existe: true })
 
   const orgId = rpcResult?.org_id
 

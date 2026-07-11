@@ -248,7 +248,9 @@ function PantallaRegistro({ email, onRegistrado }) {
       const data = await res.json()
       if (!res.ok || !data.ok) throw new Error(data.error || 'error_servidor')
 
+      await new Promise(r => setTimeout(r, 500))
       onRegistrado()
+      return
     } catch (e) {
       setError(e.message === 'no_auth' ? 'Sesión expirada, volvé a ingresar.' : 'Ocurrió un error. Intentá de nuevo.')
       setCargando(false)
