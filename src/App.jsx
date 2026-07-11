@@ -127,7 +127,7 @@ export default function App() {
                   onSignOut={() => supabase.auth.signOut()} />
               </div>
             </div>
-          ) : !onboardingVisto && !perfil?.nombre ? (
+          ) : !onboardingVisto ? (
             <div className="flex flex-col h-full overflow-y-auto" style={{ background: '#0D0D14' }}>
               <Onboarding
                 nombre={nombreUsuario}
