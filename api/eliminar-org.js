@@ -16,13 +16,16 @@ async function findUserByEmail(supa, email) {
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-app-key')
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-app-key, x-internal-key')
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ ok: false })
 
-  const appKey = req.headers['x-app-key'] || req.headers['x-internal-key']
-  const validKey = process.env.INTERNAL_API_KEY || process.env.ERROR_REPORT_KEY
-  if (!validKey || appKey !== validKey) {
+  const appKey = req.headers['x-app-key']
+  const internalKey = req.headers['x-internal-key']
+  const validAppKey = process.env.ERROR_REPORT_KEY && appKey === process.env.ERROR_REPORT_KEY
+  const validInternal = process.env.INTERNAL_API_KEY && internalKey === process.env.INTERNAL_API_KEY
+  if (!validAppKey && !validInternal) {
+    console.error('[eliminar-org] auth fail, x-app-key:', !!appKey, 'x-internal-key:', !!internalKey)
     return res.status(401).json({ ok: false, error: 'no_auth' })
   }
 
