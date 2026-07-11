@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const { data: org } = await central.from('organizaciones').select('email_contacto').eq('id', org_id).single()
     if (!org) return res.status(404).json({ ok: false, error: 'org no encontrada' })
 
-    const supa = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+    const supa = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY)
 
     const user = await findUserByEmail(supa, org.email_contacto)
     if (!user) return res.status(200).json({ ok: true, msg: 'usuario no encontrado en satellite' })
