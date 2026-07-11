@@ -42,7 +42,7 @@ export default async function handler(req, res) {
   try {
     const r = await fetch(`${SAAS_URL}/api/mp-cancelar-suscripcion`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-internal-key': process.env.INTERNAL_API_KEY || '' },
       body: JSON.stringify({ org_id: orgId, app_id: 'app-contratista', mp_preapproval_id: sub.mp_preapproval_id }),
     })
     return res.status(r.status).json(await r.json())
