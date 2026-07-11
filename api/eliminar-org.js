@@ -20,8 +20,9 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ ok: false })
 
-  const appKey = req.headers['x-app-key']
-  if (!process.env.ERROR_REPORT_KEY || appKey !== process.env.ERROR_REPORT_KEY) {
+  const appKey = req.headers['x-app-key'] || req.headers['x-internal-key']
+  const validKey = process.env.INTERNAL_API_KEY || process.env.ERROR_REPORT_KEY
+  if (!validKey || appKey !== validKey) {
     return res.status(401).json({ ok: false, error: 'no_auth' })
   }
 
