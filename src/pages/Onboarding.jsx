@@ -210,9 +210,9 @@ export default function Onboarding({ nombre, diasRestantes, onFinalizar }) {
               </div>
               <div className="rounded-2xl px-4 py-3 flex items-center gap-3"
                 style={{ background: '#161622', border: '1px solid #1E1E2E' }}>
-                <span className="text-xl">💬</span>
+                <span className="text-xl">💳</span>
                 <p className="text-gray-300 text-[13px]">
-                  Para activar tu plan o consultas, contactanos por WhatsApp
+                  Cuando quieras activar tu plan, hacelo desde <strong>Más → Mi Plan</strong>
                 </p>
               </div>
             </div>
