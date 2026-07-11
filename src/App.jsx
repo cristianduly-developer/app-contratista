@@ -248,14 +248,7 @@ function PantallaRegistro({ email, onRegistrado }) {
       const data = await res.json()
       if (!res.ok || !data.ok) throw new Error(data.error || 'error_servidor')
 
-      for (let i = 0; i < 5; i++) {
-        await new Promise(r => setTimeout(r, 1500))
-        const result = await import('./lib/useSuscripcion').then(m => m.verificarSuscripcion())
-        if (result?.tiene_acceso) { onRegistrado(); return }
-      }
-
-      setError('El acceso tardó más de lo esperado. Intentá recargar la página.')
-      setCargando(false)
+      onRegistrado()
     } catch (e) {
       setError(e.message === 'no_auth' ? 'Sesión expirada, volvé a ingresar.' : 'Ocurrió un error. Intentá de nuevo.')
       setCargando(false)
