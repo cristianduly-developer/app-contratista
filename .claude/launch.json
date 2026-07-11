@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 5180,
+      "cwd": "C:\\Users\\payef\\OneDrive\\Desktop\\APP QUINCHO\\App-contratista"
+    }
+  ]
+}

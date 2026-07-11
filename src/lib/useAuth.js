@@ -1,0 +1,52 @@
+import { useState, useEffect } from 'react'
+import { supabase } from './supabase'
+
+export function useAuth() {
+  const [user, setUser] = useState(null)
+  const [perfil, setPerfil] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      if (session?.user) cargarPerfil(session.user.id)
+      else setLoading(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+      if (session?.user) cargarPerfil(session.user.id)
+      else { setPerfil(null); setLoading(false) }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function cargarPerfil(uid) {
+    const { data } = await supabase.from('perfiles').select('*').eq('id', uid).maybeSingle()
+    if (data) {
+      setPerfil(data)
+    } else {
+      const { data: { user } } = await supabase.auth.getUser()
+      const nombre = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
+      const email  = user?.email || ''
+      const { data: nuevo } = await supabase
+        .from('perfiles').upsert({ id: uid, email, nombre }, { onConflict: 'id', ignoreDuplicates: false }).select().single()
+      setPerfil(nuevo)
+    }
+    setLoading(false)
+  }
+
+  async function logout() {
+    return supabase.auth.signOut()
+  }
+
+  async function actualizarPerfil(datos) {
+    const { data, error } = await supabase
+      .from('perfiles').update(datos).eq('id', user.id).select().single()
+    if (!error) setPerfil(data)
+    return { data, error }
+  }
+
+  return { user, perfil, loading, logout, actualizarPerfil }
+}
