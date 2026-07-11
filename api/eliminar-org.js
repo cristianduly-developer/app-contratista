@@ -41,7 +41,9 @@ export default async function handler(req, res) {
       contactEmail = org.email_contacto
     }
 
-    const supa = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY)
+    const serviceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!serviceKey) { console.error('[eliminar-org] No service key found'); return res.status(500).json({ ok: false, error: 'missing_service_key' }) }
+    const supa = createClient(process.env.VITE_SUPABASE_URL, serviceKey)
 
     const user = await findUserByEmail(supa, contactEmail)
     if (!user) return res.status(200).json({ ok: true, msg: 'usuario no encontrado en satellite' })
