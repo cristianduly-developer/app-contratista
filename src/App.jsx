@@ -37,13 +37,12 @@ export default function App() {
     () => !!localStorage.getItem('onboarding_seen')
   )
 
-  const verificar = useCallback(() => {
+  const verificar = useCallback(async () => {
     if (!user) { setSuscripcion(null); setCheckingAcceso(false); return }
     setCheckingAcceso(true)
-    verificarSuscripcion().then(result => {
-      setSuscripcion(result)
-      setCheckingAcceso(false)
-    })
+    const result = await verificarSuscripcion()
+    setSuscripcion(result)
+    setCheckingAcceso(false)
   }, [user?.id])
 
   useEffect(() => { verificar() }, [verificar])
@@ -249,8 +248,8 @@ function PantallaRegistro({ email, onRegistrado }) {
       if (!res.ok || !data.ok) throw new Error(data.error || 'error_servidor')
 
       await new Promise(r => setTimeout(r, 500))
-      onRegistrado()
-      return
+      await onRegistrado()
+      setCargando(false)
     } catch (e) {
       setError(e.message === 'no_auth' ? 'Sesión expirada, volvé a ingresar.' : 'Ocurrió un error. Intentá de nuevo.')
       setCargando(false)
