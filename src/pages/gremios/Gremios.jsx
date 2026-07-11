@@ -41,9 +41,13 @@ export default function Gremios() {
             <h1 className="text-white font-bold text-[22px]">Gremios</h1>
             <p className="text-gray-500 text-[12px]">{gremios.length} gremio{gremios.length !== 1 ? 's' : ''}</p>
           </div>
-          <button onClick={() => navigate('/gremios/nuevo')}
+          <button onClick={() => {
+              const limite = features.max_gremios
+              if (limite !== Infinity && gremios.length >= limite) { alert(`Tu plan permite hasta ${limite} gremios. Mejorá tu plan para agregar más.`); return }
+              navigate('/gremios/nuevo')
+            }}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-semibold text-[13px] text-white"
-            style={{ background: 'linear-gradient(135deg, #F97316, #EA580C)' }}>
+            style={{ background: features.max_gremios !== Infinity && gremios.length >= features.max_gremios ? '#6B7280' : 'linear-gradient(135deg, #F97316, #EA580C)' }}>
             <Plus size={16} /> Nuevo
           </button>
         </div>

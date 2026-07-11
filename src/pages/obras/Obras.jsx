@@ -44,6 +44,7 @@ export default function Obras() {
       || (o.cliente_nombre || '').toLowerCase().includes(buscar.toLowerCase()))
 
   const activas = obras.filter(o => !['finalizada', 'cobrada'].includes(o.status)).length
+  const limiteAlcanzado = features.max_obras !== Infinity && obras.length >= features.max_obras
 
   return (
     <div className="flex-1 overflow-y-auto pb-24" style={{ background: '#0A0A0F' }}>
@@ -54,9 +55,9 @@ export default function Obras() {
             <h1 className="text-white font-bold text-[22px]">Obras</h1>
             <p className="text-gray-500 text-[12px]">{obras.length} obra{obras.length !== 1 ? 's' : ''} · {activas} activa{activas !== 1 ? 's' : ''}</p>
           </div>
-          <button onClick={() => navigate('/obras/nueva')}
+          <button onClick={() => limiteAlcanzado ? alert(`Tu plan permite hasta ${features.max_obras} obras. Mejorá tu plan para crear más.`) : navigate('/obras/nueva')}
             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-semibold text-[13px] text-white"
-            style={{ background: 'linear-gradient(135deg, #F97316, #EA580C)' }}>
+            style={{ background: limiteAlcanzado ? '#6B7280' : 'linear-gradient(135deg, #F97316, #EA580C)' }}>
             <Plus size={16} /> Nueva
           </button>
         </div>

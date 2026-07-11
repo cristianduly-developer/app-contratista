@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Edit3, Plus, Trash2, Users, DollarSign, AlertTriangle, Camera, FileText, Bell, Upload, Receipt, Share2, FileDown } from 'lucide-react'
 import { supabase, mensajeErrorGuardado } from '../../lib/supabase'
 import { useAuth } from '../../lib/useAuth'
+import { usePlan } from '../../lib/PlanContext'
 import { fmt, fmtFecha } from '../../lib/fmt'
 
 const STATUS_LABELS = {
@@ -22,6 +23,7 @@ export default function ObraDetalle() {
   const navigate = useNavigate()
   const { id } = useParams()
   const { user } = useAuth()
+  const { features } = usePlan()
 
   const [obra, setObra] = useState(null)
   const [gremiosAsig, setGremiosAsig] = useState([])
@@ -328,7 +330,7 @@ export default function ObraDetalle() {
             { key: 'gremios', label: 'Gremios', icon: Users },
             { key: 'pagos', label: 'Pagos', icon: DollarSign },
             { key: 'cobros', label: 'Cobros', icon: DollarSign },
-            { key: 'fotos', label: 'Fotos', icon: Camera },
+            ...(features.fotos ? [{ key: 'fotos', label: 'Fotos', icon: Camera }] : []),
             { key: 'notas', label: 'Notas', icon: FileText },
             { key: 'comprobantes', label: 'Comprob.', icon: Receipt },
             { key: 'alertas', label: 'Alertas', icon: Bell, badge: alertas.filter(a => !a.resuelta).length },
