@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, DollarSign } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
 import { fmt, fmtFecha } from '../lib/fmt'
+import Spinner from '../components/Spinner'
 
 function getWeekRange(date) {
   const d = new Date(date)

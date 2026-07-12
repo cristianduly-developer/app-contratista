@@ -4,6 +4,7 @@ import { Briefcase, Users, DollarSign, TrendingUp, AlertTriangle, Plus, Calculat
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
 import { fmt, fmtCorto } from '../lib/fmt'
+import Spinner from '../components/Spinner'
 
 export default function Inicio({ plan }) {
   const navigate = useNavigate()
@@ -50,14 +51,7 @@ export default function Inicio({ plan }) {
     }).catch(() => { setLoading(false) })
   }, [user?.id, key])
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center" style={{ background: '#0A0A0F' }}>
-        <div className="w-8 h-8 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(249,115,22,0.3)', borderTopColor: '#F97316' }} />
-      </div>
-    )
-  }
+  if (loading) return <Spinner />
 
   const d = data
   const nombre = user?.user_metadata?.full_name?.split(' ')[0] || 'Contratista'

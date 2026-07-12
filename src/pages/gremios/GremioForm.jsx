@@ -4,6 +4,7 @@ import { ArrowLeft, Save, RefreshCw, Link2 } from 'lucide-react'
 import { supabase, mensajeErrorGuardado } from '../../lib/supabase'
 import { useAuth } from '../../lib/useAuth'
 import { usePlan } from '../../lib/PlanContext'
+import Spinner from '../../components/Spinner'
 
 const TIPOS = [
   'Albañilería', 'Electricidad', 'Plomería', 'Pintura', 'Carpintería',
@@ -75,14 +76,7 @@ export default function GremioForm() {
     window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Link copiado', type: 'success' } }))
   }
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center" style={{ background: '#0A0A0F' }}>
-        <div className="w-8 h-8 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(249,115,22,0.3)', borderTopColor: '#F97316' }} />
-      </div>
-    )
-  }
+  if (loading) return <Spinner />
 
   return (
     <div className="flex-1 overflow-y-auto pb-24" style={{ background: '#0A0A0F' }}>

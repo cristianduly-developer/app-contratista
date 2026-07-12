@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Trash2, Save, RefreshCw } from 'lucide-react'
 import { supabase, mensajeErrorGuardado } from '../../lib/supabase'
 import { useAuth } from '../../lib/useAuth'
 import { fmt } from '../../lib/fmt'
+import Spinner from '../../components/Spinner'
 
 const GREMIOS_DEFAULT = [
   { emoji: '🧱', tipo: 'Albañilería' },
@@ -83,14 +84,7 @@ export default function Calculadora() {
   const totalPorM2 = items.reduce((s, p) => s + Number(p.precio), 0)
   const totalObra = totalPorM2 * m2Num
 
-  if (loading) {
-    return (
-      <div className="flex-1 flex items-center justify-center" style={{ background: '#0A0A0F' }}>
-        <div className="w-8 h-8 border-2 rounded-full animate-spin"
-          style={{ borderColor: 'rgba(249,115,22,0.3)', borderTopColor: '#F97316' }} />
-      </div>
-    )
-  }
+  if (loading) return <Spinner />
 
   return (
     <div className="flex-1 overflow-y-auto pb-24" style={{ background: '#0A0A0F' }}>
