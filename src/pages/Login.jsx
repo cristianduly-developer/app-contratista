@@ -5,6 +5,8 @@ export default function Login() {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: window.location.origin },
+    }).catch(() => {
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Error al iniciar sesión. Intentá de nuevo.', type: 'error' } }))
     })
   }
 

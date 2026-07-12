@@ -50,6 +50,12 @@ export default function ObraForm() {
 
   async function guardar() {
     if (!form.nombre.trim()) return
+    if (Number(form.m2) < 0 || Number(form.precio_inversor) < 0) {
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Los valores no pueden ser negativos', type: 'error' } })); return
+    }
+    if (form.fecha_inicio && form.fecha_fin_estimada && form.fecha_fin_estimada < form.fecha_inicio) {
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'La fecha de fin no puede ser anterior al inicio', type: 'error' } })); return
+    }
     setGuardando(true)
 
     if (esEditar) {

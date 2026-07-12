@@ -718,7 +718,7 @@ function PagoModal({ obraId, gremio, userId, onClose, onDone }) {
       <div className="flex flex-col gap-3">
         <div>
           <label className="text-gray-500 text-[11px] block mb-1">Monto *</label>
-          <input type="number" inputMode="numeric" value={monto} onChange={e => setMonto(e.target.value)}
+          <input type="number" inputMode="numeric" min="0" value={monto} onChange={e => setMonto(e.target.value)}
             placeholder="0" autoFocus
             className="w-full rounded-xl px-4 py-3 text-white text-[16px] font-bold outline-none"
             style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
@@ -736,7 +736,7 @@ function PagoModal({ obraId, gremio, userId, onClose, onDone }) {
         <div>
           <label className="text-gray-500 text-[11px] block mb-1">Notas</label>
           <input type="text" value={notas} onChange={e => setNotas(e.target.value)}
-            placeholder="Opcional"
+            placeholder="Opcional" maxLength={200}
             className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none"
             style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
         </div>
@@ -773,7 +773,7 @@ function CobroModal({ obraId, userId, onClose, onDone }) {
       <div className="flex flex-col gap-3">
         <div>
           <label className="text-gray-500 text-[11px] block mb-1">Monto *</label>
-          <input type="number" inputMode="numeric" value={monto} onChange={e => setMonto(e.target.value)}
+          <input type="number" inputMode="numeric" min="0" value={monto} onChange={e => setMonto(e.target.value)}
             placeholder="0" autoFocus
             className="w-full rounded-xl px-4 py-3 text-white text-[16px] font-bold outline-none"
             style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
@@ -791,7 +791,7 @@ function CobroModal({ obraId, userId, onClose, onDone }) {
         <div>
           <label className="text-gray-500 text-[11px] block mb-1">Notas</label>
           <input type="text" value={notas} onChange={e => setNotas(e.target.value)}
-            placeholder="Opcional"
+            placeholder="Opcional" maxLength={200}
             className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none"
             style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
         </div>

@@ -27,6 +27,9 @@ export default function Configuracion() {
   }, [user?.id])
 
   async function guardar() {
+    if (!nombre.trim()) {
+      window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'El nombre no puede estar vacío', type: 'error' } })); return
+    }
     setGuardando(true)
     try {
       await actualizarPerfil({ nombre: nombre.trim(), telefono: telefono.trim(), ciudad: ciudad.trim() })

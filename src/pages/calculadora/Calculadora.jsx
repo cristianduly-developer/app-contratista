@@ -119,6 +119,7 @@ export default function Calculadora() {
             <input
               type="number"
               inputMode="numeric"
+              min="0"
               value={m2}
               onChange={e => setM2(e.target.value)}
               placeholder="Ej: 120"
@@ -164,6 +165,7 @@ export default function Calculadora() {
                 <input
                   type="number"
                   inputMode="numeric"
+                  min="0"
                   value={p.precio}
                   onChange={e => actualizarPrecio(i, e.target.value)}
                   placeholder="0"
