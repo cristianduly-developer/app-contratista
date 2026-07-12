@@ -66,7 +66,7 @@ export default function GremioAsignado({ og, onStatusChange, onMontoChange, onDe
           style={{ background: '#F9731612', color: '#F97316', border: '1px solid #F9731630' }}>
           <DollarSign size={12} /> Pagar
         </button>
-        <button onClick={() => onDesasignar(og.id)}
+        <button onClick={() => onDesasignar(og.id)} aria-label="Desasignar gremio"
           className="w-9 h-9 rounded-lg flex items-center justify-center"
           style={{ background: '#EF444412', border: '1px solid #EF444430' }}>
           <Trash2 size={14} color="#EF4444" />

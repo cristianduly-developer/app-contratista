@@ -122,7 +122,7 @@ export default function VistaViernes() {
                 <DollarSign size={14} color="#EF4444" /> Pagos a gremios ({pagos.length})
               </h2>
               {pagos.length === 0 ? (
-                <p className="text-gray-600 text-[12px] py-3 text-center">Sin pagos esta semana</p>
+                <p className="text-gray-500 text-[12px] py-3 text-center">Sin pagos esta semana</p>
               ) : pagos.map(p => (
                 <div key={p.id} className="rounded-xl p-3 mb-2 flex items-center justify-between"
                   style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
@@ -131,7 +131,7 @@ export default function VistaViernes() {
                     <p className="text-gray-500 text-[10px] truncate">
                       {p.obras?.nombre || 'Obra'} · {fmtFecha(p.fecha)} · {p.metodo}
                     </p>
-                    {p.notas && <p className="text-gray-600 text-[10px] truncate">{p.notas}</p>}
+                    {p.notas && <p className="text-gray-500 text-[10px] truncate">{p.notas}</p>}
                   </div>
                   <span className="text-red-400 font-bold text-[14px] ml-2 shrink-0">-{fmt(p.monto)}</span>
                 </div>
@@ -144,14 +144,14 @@ export default function VistaViernes() {
                 <DollarSign size={14} color="#22C55E" /> Cobros del inversor ({cobros.length})
               </h2>
               {cobros.length === 0 ? (
-                <p className="text-gray-600 text-[12px] py-3 text-center">Sin cobros esta semana</p>
+                <p className="text-gray-500 text-[12px] py-3 text-center">Sin cobros esta semana</p>
               ) : cobros.map(c => (
                 <div key={c.id} className="rounded-xl p-3 mb-2 flex items-center justify-between"
                   style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
                   <div className="min-w-0 flex-1">
                     <p className="text-white text-[13px] font-medium truncate">{c.obras?.nombre || 'Obra'}</p>
                     <p className="text-gray-500 text-[10px]">{fmtFecha(c.fecha)} · {c.metodo}</p>
-                    {c.notas && <p className="text-gray-600 text-[10px] truncate">{c.notas}</p>}
+                    {c.notas && <p className="text-gray-500 text-[10px] truncate">{c.notas}</p>}
                   </div>
                   <span className="text-green-400 font-bold text-[14px] ml-2 shrink-0">+{fmt(c.monto)}</span>
                 </div>

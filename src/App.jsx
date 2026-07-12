@@ -302,7 +302,7 @@ function PantallaRegistro({ email, onRegistrado }) {
       {error && <p className="text-red-400 text-[12px] text-center mt-3">{error}</p>}
 
       <button onClick={() => supabase.auth.signOut()}
-        className="text-gray-600 text-[11px] underline text-center mx-auto block mt-6">
+        className="text-gray-500 text-[11px] underline text-center mx-auto block mt-6">
         Cerrar sesión ({email})
       </button>
     </div>
@@ -391,7 +391,7 @@ function SelectorPlanesMP({ orgId, titulo, subtitulo, emoji, onSignOut }) {
         {cargando ? 'Redirigiendo...' : `Suscribirme — Plan ${planInfo?.label ?? planSel}`}
       </button>
 
-      <button onClick={onSignOut} className="text-gray-600 text-[11px] underline text-center mx-auto block">
+      <button onClick={onSignOut} className="text-gray-500 text-[11px] underline text-center mx-auto block">
         Volver al inicio de sesión
       </button>
     </div>

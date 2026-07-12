@@ -68,7 +68,7 @@ export default function Onboarding({ nombre, diasRestantes, onFinalizar }) {
             ))}
           </div>
           {!esUltimo && (
-            <button onClick={onFinalizar} className="text-gray-600 text-[13px] underline">
+            <button onClick={onFinalizar} className="text-gray-500 text-[13px] underline">
               Saltar
             </button>
           )}
@@ -134,7 +134,7 @@ export default function Onboarding({ nombre, diasRestantes, onFinalizar }) {
               <Campo label="WhatsApp / Teléfono" value={telefono} onChange={setTelefono} placeholder="Ej: 223 567-7784" type="tel" />
               <Campo label="Ciudad" value={ciudad} onChange={setCiudad} placeholder="Ej: Mar del Plata, Buenos Aires..." />
             </div>
-            <p className="text-gray-600 text-[11px] text-center mt-4">
+            <p className="text-gray-500 text-[11px] text-center mt-4">
               Podés completar más datos después en Configuración
             </p>
           </div>
@@ -170,12 +170,12 @@ export default function Onboarding({ nombre, diasRestantes, onFinalizar }) {
                       className="w-20 rounded-xl px-3 py-2 text-white text-[14px] text-right outline-none"
                       style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }}
                     />
-                    <span className="text-gray-600 text-[11px]">/m²</span>
+                    <span className="text-gray-500 text-[11px]">/m²</span>
                   </div>
                 </div>
               ))}
             </div>
-            <p className="text-gray-600 text-[11px] text-center mt-3">
+            <p className="text-gray-500 text-[11px] text-center mt-3">
               Podés dejar vacíos los que no uses y editarlos después
             </p>
           </div>

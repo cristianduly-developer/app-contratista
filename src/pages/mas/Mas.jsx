@@ -28,7 +28,7 @@ export default function Mas({ plan }) {
                 <Icon size={18} color={color} />
               </div>
               <span className="text-white text-[14px] font-medium flex-1">{label}</span>
-              <span className="text-gray-600 text-[18px]">›</span>
+              <span className="text-gray-500 text-[18px]">›</span>
             </a>
           ) : (
             <button key={path} onClick={() => navigate(path)}
@@ -38,7 +38,7 @@ export default function Mas({ plan }) {
                 <Icon size={18} color={color} />
               </div>
               <span className="text-white text-[14px] font-medium flex-1">{label}</span>
-              <span className="text-gray-600 text-[18px]">›</span>
+              <span className="text-gray-500 text-[18px]">›</span>
             </button>
           )
         ))}
@@ -52,7 +52,7 @@ export default function Mas({ plan }) {
           <MessageCircle size={18} color="#25D366" />
         </div>
         <span className="text-white text-[14px] font-medium flex-1">Contactar soporte</span>
-        <span className="text-gray-600 text-[18px]">›</span>
+        <span className="text-gray-500 text-[18px]">›</span>
       </a>
 
       <button onClick={() => supabase.auth.signOut()}

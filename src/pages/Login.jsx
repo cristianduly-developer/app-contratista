@@ -31,7 +31,7 @@ export default function Login() {
         Ingresar con Google
       </button>
 
-      <p className="text-gray-600 text-[11px] text-center max-w-xs">
+      <p className="text-gray-500 text-[11px] text-center max-w-xs">
         Al ingresar aceptás los términos de uso del servicio.
       </p>
     </div>

@@ -34,7 +34,7 @@ export default function TabFotos({ obraId, userId, fotos, onRefresh, onBorrar })
       </label>
 
       {fotos.length === 0 ? (
-        <p className="text-gray-600 text-[12px] text-center py-4">Sin fotos</p>
+        <p className="text-gray-500 text-[12px] text-center py-4">Sin fotos</p>
       ) : (
         <div className="grid grid-cols-3 gap-2">
           {fotos.map(f => (
@@ -42,7 +42,7 @@ export default function TabFotos({ obraId, userId, fotos, onRefresh, onBorrar })
               <a href={f.url} target="_blank" rel="noopener noreferrer">
                 <img src={f.url} alt={f.descripcion || ''} className="w-full h-full object-cover" loading="lazy" />
               </a>
-              <button onClick={() => onBorrar(f.id, f.url)}
+              <button onClick={() => onBorrar(f.id, f.url)} aria-label="Eliminar foto"
                 className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center bg-black/60">
                 <Trash2 size={10} color="#EF4444" />
               </button>

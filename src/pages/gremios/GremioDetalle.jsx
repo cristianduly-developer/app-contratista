@@ -66,13 +66,13 @@ export default function GremioDetalle() {
       {/* Header */}
       <div className="sticky top-0 z-20 px-4 pt-4 pb-3 flex items-center gap-3"
         style={{ background: '#0A0A0F' }}>
-        <button onClick={() => navigate('/gremios')}
+        <button onClick={() => navigate('/gremios')} aria-label="Volver"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <ArrowLeft size={18} color="#9CA3AF" />
         </button>
         <h1 className="text-white font-bold text-[16px] flex-1 truncate">{gremio.nombre}</h1>
-        <button onClick={() => navigate(`/gremios/${id}/editar`)}
+        <button onClick={() => navigate(`/gremios/${id}/editar`)} aria-label="Editar gremio"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <Edit3 size={16} color="#F97316" />
@@ -96,15 +96,15 @@ export default function GremioDetalle() {
           {/* KPIs */}
           <div className="grid grid-cols-3 gap-2 mb-3">
             <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
-              <p className="text-gray-600 text-[9px]">Acordado</p>
+              <p className="text-gray-500 text-[9px]">Acordado</p>
               <p className="text-white text-[13px] font-bold">{fmt(gremio.total_acordado)}</p>
             </div>
             <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
-              <p className="text-gray-600 text-[9px]">Pagado</p>
+              <p className="text-gray-500 text-[9px]">Pagado</p>
               <p className="text-red-400 text-[13px] font-bold">{fmt(gremio.total_pagado)}</p>
             </div>
             <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
-              <p className="text-gray-600 text-[9px]">Saldo</p>
+              <p className="text-gray-500 text-[9px]">Saldo</p>
               <p className={`text-[13px] font-bold ${gremio.saldo_pendiente > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
                 {fmt(gremio.saldo_pendiente)}
               </p>
@@ -199,11 +199,11 @@ function ObraGremioCard({ og, pagos, onNavigate }) {
       </div>
       <div className="grid grid-cols-2 gap-2 text-[10px]">
         <div>
-          <span className="text-gray-600">Acordado: </span>
+          <span className="text-gray-500">Acordado: </span>
           <span className="text-white font-medium">{fmt(og.monto_acordado)}</span>
         </div>
         <div>
-          <span className="text-gray-600">Pagado: </span>
+          <span className="text-gray-500">Pagado: </span>
           <span className="text-red-400 font-medium">{fmt(pagado)}</span>
         </div>
       </div>

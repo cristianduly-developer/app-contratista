@@ -60,7 +60,7 @@ export default function Sidebar({ plan, estadoSus, diasRestantes }) {
       })}
 
       <div className="mt-auto px-3 pt-4 border-t flex flex-col gap-2" style={{ borderColor: '#1E1E2E' }}>
-        <p className="text-[10px] text-gray-600">Plan: {plan}</p>
+        <p className="text-[10px] text-gray-500">Plan: {plan}</p>
         <button onClick={() => supabase.auth.signOut()}
           className="flex items-center gap-2 px-3 py-2 rounded-xl text-[12px] font-medium transition-colors text-left"
           style={{ color: '#EF4444' }}>

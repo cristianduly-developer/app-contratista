@@ -75,7 +75,7 @@ export default function Gremios() {
             <p className="text-gray-400 text-[14px] mb-1">
               {gremios.length === 0 ? 'No tenés gremios' : 'Sin resultados'}
             </p>
-            <p className="text-gray-600 text-[12px]">
+            <p className="text-gray-500 text-[12px]">
               {gremios.length === 0 ? 'Agregá tu primer subcontratista' : 'Probá con otro nombre'}
             </p>
           </div>
@@ -120,15 +120,15 @@ function GremioCard({ gremio, features, onClick, onEdit }) {
       {/* KPIs */}
       <div className="grid grid-cols-3 gap-2 mb-3">
         <div>
-          <p className="text-gray-600 text-[10px]">Acordado</p>
+          <p className="text-gray-500 text-[10px]">Acordado</p>
           <p className="text-white text-[12px] font-semibold">{fmt(gremio.total_acordado)}</p>
         </div>
         <div>
-          <p className="text-gray-600 text-[10px]">Pagado</p>
+          <p className="text-gray-500 text-[10px]">Pagado</p>
           <p className="text-red-400 text-[12px] font-semibold">{fmt(gremio.total_pagado)}</p>
         </div>
         <div>
-          <p className="text-gray-600 text-[10px]">Saldo</p>
+          <p className="text-gray-500 text-[10px]">Saldo</p>
           <p className={`text-[12px] font-semibold ${gremio.saldo_pendiente > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
             {fmt(gremio.saldo_pendiente)}
           </p>
@@ -154,7 +154,7 @@ function GremioCard({ gremio, features, onClick, onEdit }) {
       </div>
 
       {gremio.obras_activas > 0 && (
-        <p className="text-gray-600 text-[10px] mt-2">{gremio.obras_activas} obra{gremio.obras_activas > 1 ? 's' : ''} activa{gremio.obras_activas > 1 ? 's' : ''}</p>
+        <p className="text-gray-500 text-[10px] mt-2">{gremio.obras_activas} obra{gremio.obras_activas > 1 ? 's' : ''} activa{gremio.obras_activas > 1 ? 's' : ''}</p>
       )}
     </div>
   )

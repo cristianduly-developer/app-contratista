@@ -70,7 +70,7 @@ export default function MiPlan() {
     <div className="flex-1 overflow-y-auto pb-24" style={{ background: '#0A0A0F' }}>
       <div className="sticky top-0 z-20 px-4 pt-4 pb-3 flex items-center gap-3"
         style={{ background: '#0A0A0F' }}>
-        <button onClick={() => navigate(-1)}
+        <button onClick={() => navigate(-1)} aria-label="Volver"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <ArrowLeft size={18} color="#9CA3AF" />
@@ -128,7 +128,7 @@ export default function MiPlan() {
                     {val === true ? (
                       <Check size={14} className="mx-auto" color="#22C55E" />
                     ) : val === false ? (
-                      <span className="text-gray-600 text-[12px]">—</span>
+                      <span className="text-gray-500 text-[12px]">—</span>
                     ) : (
                       <span className="text-white text-[11px] font-medium">{val}</span>
                     )}
@@ -197,7 +197,7 @@ export default function MiPlan() {
           Consultar por WhatsApp
         </a>
 
-        <p className="text-gray-600 text-[10px] text-center">
+        <p className="text-gray-500 text-[10px] text-center">
           Para cancelar tu suscripción, contactá a soporte
         </p>
       </div>

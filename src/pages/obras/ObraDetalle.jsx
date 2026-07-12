@@ -304,19 +304,18 @@ export default function ObraDetalle() {
       {/* Header */}
       <div className="sticky top-0 z-20 px-4 pt-4 pb-3 flex items-center gap-3"
         style={{ background: '#0A0A0F' }}>
-        <button onClick={() => navigate('/obras')}
+        <button onClick={() => navigate('/obras')} aria-label="Volver"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <ArrowLeft size={18} color="#9CA3AF" />
         </button>
         <h1 className="text-white font-bold text-[16px] flex-1 truncate">{obra.nombre}</h1>
-        <button onClick={exportarPDF}
+        <button onClick={exportarPDF} aria-label="Exportar PDF"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
-          style={{ background: '#13131A', border: '1px solid #2A2A3A' }}
-          title="Exportar PDF">
+          style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <FileDown size={16} color="#3B82F6" />
         </button>
-        <button onClick={() => navigate(`/obras/${id}/editar`)}
+        <button onClick={() => navigate(`/obras/${id}/editar`)} aria-label="Editar obra"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <Edit3 size={16} color="#F97316" />
@@ -395,7 +394,7 @@ export default function ObraDetalle() {
             </button>
 
             {gremiosAsig.length === 0 ? (
-              <p className="text-gray-600 text-[12px] text-center py-4">No hay gremios asignados</p>
+              <p className="text-gray-500 text-[12px] text-center py-4">No hay gremios asignados</p>
             ) : gremiosAsig.map(og => (
               <GremioAsignado key={og.id} og={og}
                 onStatusChange={actualizarStatusGremio}
@@ -412,18 +411,18 @@ export default function ObraDetalle() {
         {tab === 'pagos' && (
           <div>
             {pagos.length === 0 ? (
-              <p className="text-gray-600 text-[12px] text-center py-4">No hay pagos registrados</p>
+              <p className="text-gray-500 text-[12px] text-center py-4">No hay pagos registrados</p>
             ) : pagos.map(p => (
               <div key={p.id} className="rounded-xl p-3 mb-2 flex items-center justify-between"
                 style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
                 <div>
                   <p className="text-white text-[13px] font-medium">{p.gremios?.nombre || 'Gremio'}</p>
                   <p className="text-gray-500 text-[11px]">{fmtFecha(p.fecha)} · {p.metodo}</p>
-                  {p.notas && <p className="text-gray-600 text-[10px]">{p.notas}</p>}
+                  {p.notas && <p className="text-gray-500 text-[10px]">{p.notas}</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-red-400 font-bold text-[14px]">-{fmt(p.monto)}</span>
-                  <button onClick={() => borrarPago(p.id)}
+                  <button onClick={() => borrarPago(p.id)} aria-label="Eliminar pago"
                     className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                     style={{ background: '#EF444412' }}>
                     <Trash2 size={12} color="#EF4444" />
@@ -444,18 +443,18 @@ export default function ObraDetalle() {
             </button>
 
             {cobros.length === 0 ? (
-              <p className="text-gray-600 text-[12px] text-center py-4">No hay cobros registrados</p>
+              <p className="text-gray-500 text-[12px] text-center py-4">No hay cobros registrados</p>
             ) : cobros.map(c => (
               <div key={c.id} className="rounded-xl p-3 mb-2 flex items-center justify-between"
                 style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
                 <div>
                   <p className="text-white text-[13px] font-medium">Cobro del inversor</p>
                   <p className="text-gray-500 text-[11px]">{fmtFecha(c.fecha)} · {c.metodo}</p>
-                  {c.notas && <p className="text-gray-600 text-[10px]">{c.notas}</p>}
+                  {c.notas && <p className="text-gray-500 text-[10px]">{c.notas}</p>}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-green-400 font-bold text-[14px]">+{fmt(c.monto)}</span>
-                  <button onClick={() => borrarCobro(c.id)}
+                  <button onClick={() => borrarCobro(c.id)} aria-label="Eliminar cobro"
                     className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                     style={{ background: '#EF444412' }}>
                     <Trash2 size={12} color="#EF4444" />
@@ -480,7 +479,7 @@ export default function ObraDetalle() {
               <Plus size={16} /> Agregar nota
             </button>
             {notas.length === 0 ? (
-              <p className="text-gray-600 text-[12px] text-center py-4">Sin notas</p>
+              <p className="text-gray-500 text-[12px] text-center py-4">Sin notas</p>
             ) : notas.map(n => (
               <div key={n.id} className="rounded-xl p-3 mb-2 flex items-start gap-2" style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
                 <div className="flex-1 min-w-0">
@@ -490,7 +489,7 @@ export default function ObraDetalle() {
                     {n.gremios?.nombre && ` · ${n.gremios.nombre}`}
                   </p>
                 </div>
-                <button onClick={() => borrarNota(n.id)}
+                <button onClick={() => borrarNota(n.id)} aria-label="Eliminar nota"
                   className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                   style={{ background: '#EF444412' }}>
                   <Trash2 size={12} color="#EF4444" />
@@ -515,7 +514,7 @@ export default function ObraDetalle() {
               <Plus size={16} /> Agregar alerta
             </button>
             {alertas.length === 0 ? (
-              <p className="text-gray-600 text-[12px] text-center py-4">Sin alertas</p>
+              <p className="text-gray-500 text-[12px] text-center py-4">Sin alertas</p>
             ) : alertas.map(a => (
               <div key={a.id} className="rounded-xl p-3 mb-2 flex items-center gap-3"
                 style={{ background: '#13131A', border: `1px solid ${a.resuelta ? '#2A2A3A' : '#EF444430'}` }}>
@@ -528,9 +527,9 @@ export default function ObraDetalle() {
                 </button>
                 <div className="flex-1 min-w-0">
                   <p className={`text-[13px] ${a.resuelta ? 'text-gray-500 line-through' : 'text-white'}`}>{a.descripcion}</p>
-                  <p className="text-gray-600 text-[10px]">{fmtFecha(a.created_at)}</p>
+                  <p className="text-gray-500 text-[10px]">{fmtFecha(a.created_at)}</p>
                 </div>
-                <button onClick={() => borrarAlerta(a.id)}
+                <button onClick={() => borrarAlerta(a.id)} aria-label="Eliminar alerta"
                   className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                   style={{ background: '#EF444412' }}>
                   <Trash2 size={12} color="#EF4444" />

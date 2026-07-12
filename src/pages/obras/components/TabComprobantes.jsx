@@ -42,7 +42,7 @@ export default function TabComprobantes({ comprobantes, onBorrar, onAgregar }) {
       )}
 
       {comprobantes.length === 0 ? (
-        <p className="text-gray-600 text-[12px] text-center py-4">Sin comprobantes</p>
+        <p className="text-gray-500 text-[12px] text-center py-4">Sin comprobantes</p>
       ) : comprobantes.map(c => (
         <div key={c.id} className="rounded-xl p-3 mb-2 flex items-start gap-3"
           style={{ background: '#13131A', border: `1px solid ${seleccionados.includes(c.id) ? '#F97316' : '#2A2A3A'}` }}>
@@ -60,7 +60,7 @@ export default function TabComprobantes({ comprobantes, onBorrar, onAgregar }) {
             <p className="text-gray-500 text-[11px]">{fmtFecha(c.fecha)}{c.gremios?.nombre ? ` · ${c.gremios.nombre}` : ''}</p>
             <p className="text-orange-400 text-[12px] font-semibold">{fmt(c.monto)}</p>
           </div>
-          <button onClick={() => onBorrar(c.id, c.url)}
+          <button onClick={() => onBorrar(c.id, c.url)} aria-label="Eliminar comprobante"
             className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
             style={{ background: '#EF444412' }}>
             <Trash2 size={12} color="#EF4444" />

@@ -110,7 +110,7 @@ export default function Obras() {
             <p className="text-gray-400 text-[14px] mb-1">
               {obras.length === 0 ? 'No tenés obras todavía' : 'Sin resultados'}
             </p>
-            <p className="text-gray-600 text-[12px]">
+            <p className="text-gray-500 text-[12px]">
               {obras.length === 0 ? 'Creá tu primera obra para empezar' : 'Probá con otro filtro'}
             </p>
           </div>
@@ -170,15 +170,15 @@ function ObraCard({ obra, onClick }) {
       {/* KPIs */}
       <div className="grid grid-cols-3 gap-2">
         <div>
-          <p className="text-gray-600 text-[10px]">Inversor</p>
+          <p className="text-gray-500 text-[10px]">Inversor</p>
           <p className="text-white text-[12px] font-semibold">{fmt(obra.precio_inversor)}</p>
         </div>
         <div>
-          <p className="text-gray-600 text-[10px]">Pagado</p>
+          <p className="text-gray-500 text-[10px]">Pagado</p>
           <p className="text-red-400 text-[12px] font-semibold">{fmt(obra.pagado_gremios)}</p>
         </div>
         <div>
-          <p className="text-gray-600 text-[10px]">Ganancia</p>
+          <p className="text-gray-500 text-[10px]">Ganancia</p>
           <p className={`text-[12px] font-semibold ${obra.ganancia_neta >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {fmt(obra.ganancia_neta)}
           </p>

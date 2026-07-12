@@ -9,8 +9,8 @@ async function syncTenantAccess(userId, plan, diasRestantes) {
     const dias = (diasRestantes ?? 3650) + GRACE_DAYS
     const validUntil = new Date(Date.now() + dias * 86400000).toISOString()
     await supa.from('tenant_access').upsert(
-      { tenant_id: userId, plan: plan ?? 'basico', valid_until: validUntil },
-      { onConflict: 'tenant_id' }
+      { user_id: userId, plan: plan ?? 'basico', valid_until: validUntil },
+      { onConflict: 'user_id' }
     )
   } catch {}
 }

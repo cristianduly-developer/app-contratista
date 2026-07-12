@@ -86,7 +86,7 @@ export default function GremioPublico() {
               </p>
             </div>
           </div>
-          <p className="text-gray-600 text-[10px] text-center mt-2">
+          <p className="text-gray-500 text-[10px] text-center mt-2">
             {obrasActivas.length} obra{obrasActivas.length !== 1 ? 's' : ''} activa{obrasActivas.length !== 1 ? 's' : ''}
             {obrasFinalizadas.length > 0 && ` · ${obrasFinalizadas.length} finalizada${obrasFinalizadas.length !== 1 ? 's' : ''}`}
           </p>
@@ -111,15 +111,15 @@ export default function GremioPublico() {
 
             <div className="grid grid-cols-3 gap-2 mb-3">
               <div>
-                <p className="text-gray-600 text-[10px]">Acordado</p>
+                <p className="text-gray-500 text-[10px]">Acordado</p>
                 <p className="text-white text-[12px] font-medium">{fmt(o.monto_acordado)}</p>
               </div>
               <div>
-                <p className="text-gray-600 text-[10px]">Pagado</p>
+                <p className="text-gray-500 text-[10px]">Pagado</p>
                 <p className="text-green-400 text-[12px] font-medium">{fmt(o.total_pagado)}</p>
               </div>
               <div>
-                <p className="text-gray-600 text-[10px]">Saldo</p>
+                <p className="text-gray-500 text-[10px]">Saldo</p>
                 <p className={`text-[12px] font-medium ${o.saldo > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
                   {fmt(o.saldo)}
                 </p>
@@ -164,7 +164,7 @@ export default function GremioPublico() {
                 {o.notas.map((n, ni) => (
                   <div key={ni} className="rounded-lg px-3 py-2 mb-1" style={{ background: '#0A0A0F' }}>
                     <p className="text-gray-300 text-[12px]">{n.texto}</p>
-                    <p className="text-gray-600 text-[10px]">{fmtFecha(n.fecha)}</p>
+                    <p className="text-gray-500 text-[10px]">{fmtFecha(n.fecha)}</p>
                   </div>
                 ))}
               </div>
@@ -178,7 +178,7 @@ export default function GremioPublico() {
             <button onClick={() => setShowFinalizadas(!showFinalizadas)}
               className="w-full flex items-center justify-between py-2 text-[13px] font-semibold text-gray-400">
               <span>Obras finalizadas ({obrasFinalizadas.length})</span>
-              <span className="text-gray-600">{showFinalizadas ? '▲' : '▼'}</span>
+              <span className="text-gray-500">{showFinalizadas ? '▲' : '▼'}</span>
             </button>
             {showFinalizadas && obrasFinalizadas.map((o, i) => (
               <div key={i} className="rounded-2xl p-4 mb-3 opacity-70" style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
@@ -189,15 +189,15 @@ export default function GremioPublico() {
                 </div>
                 <div className="grid grid-cols-3 gap-2 mb-3">
                   <div>
-                    <p className="text-gray-600 text-[10px]">Acordado</p>
+                    <p className="text-gray-500 text-[10px]">Acordado</p>
                     <p className="text-white text-[12px] font-medium">{fmt(o.monto_acordado)}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-[10px]">Pagado</p>
+                    <p className="text-gray-500 text-[10px]">Pagado</p>
                     <p className="text-green-400 text-[12px] font-medium">{fmt(o.total_pagado)}</p>
                   </div>
                   <div>
-                    <p className="text-gray-600 text-[10px]">Saldo</p>
+                    <p className="text-gray-500 text-[10px]">Saldo</p>
                     <p className={`text-[12px] font-medium ${o.saldo > 0 ? 'text-yellow-400' : 'text-green-400'}`}>{fmt(o.saldo)}</p>
                   </div>
                 </div>

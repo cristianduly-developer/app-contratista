@@ -48,7 +48,7 @@ export default function Configuracion() {
     <div className="flex-1 overflow-y-auto pb-24" style={{ background: '#0A0A0F' }}>
       <div className="sticky top-0 z-20 px-4 pt-4 pb-3 flex items-center gap-3"
         style={{ background: '#0A0A0F' }}>
-        <button onClick={() => navigate(-1)}
+        <button onClick={() => navigate(-1)} aria-label="Volver"
           className="w-9 h-9 rounded-xl flex items-center justify-center"
           style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
           <ArrowLeft size={18} color="#9CA3AF" />
@@ -89,13 +89,13 @@ export default function Configuracion() {
             <p className="text-white text-[13px] font-medium">Editar precios por gremio</p>
             <p className="text-gray-500 text-[11px]">Configurá cuánto te cobra cada gremio por m²</p>
           </div>
-          <span className="text-gray-600 text-[18px]">›</span>
+          <span className="text-gray-500 text-[18px]">›</span>
         </button>
 
         <div className="border-t my-4" style={{ borderColor: '#1E1E2E' }} />
 
         {/* Cuenta */}
-        <p className="text-gray-600 text-[11px] mb-2">Cuenta: {user?.email}</p>
+        <p className="text-gray-500 text-[11px] mb-2">Cuenta: {user?.email}</p>
       </div>
     </div>
   )

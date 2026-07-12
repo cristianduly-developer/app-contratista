@@ -202,7 +202,7 @@ export default function Inicio({ plan }) {
 function MiniKPI({ label, value, color }) {
   return (
     <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
-      <p className="text-gray-600 text-[9px]">{label}</p>
+      <p className="text-gray-500 text-[9px]">{label}</p>
       <p className="font-bold text-[13px]" style={{ color }}>{value}</p>
     </div>
   )
