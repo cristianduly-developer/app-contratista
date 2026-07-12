@@ -4,5 +4,4 @@ dist
 .env.local
 *.local
 .vercel
-
-.vercel
+fotos/

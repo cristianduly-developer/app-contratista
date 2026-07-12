@@ -1,21 +1,26 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Edit3, Plus, Trash2, Users, DollarSign, AlertTriangle, Camera, FileText, Bell, Upload, Receipt, Share2, FileDown } from 'lucide-react'
+import { ArrowLeft, Edit3, Plus, Trash2, Users, DollarSign, Camera, FileText, Bell, Receipt, FileDown } from 'lucide-react'
 import { supabase, mensajeErrorGuardado } from '../../lib/supabase'
 import { useAuth } from '../../lib/useAuth'
 import { usePlan } from '../../lib/PlanContext'
 import { fmt, fmtFecha } from '../../lib/fmt'
 
+import Modal from './components/Modal'
+import KPI from './components/KPI'
+import GremioAsignado, { GREMIO_STATUS } from './components/GremioAsignado'
+import PagoModal from './components/PagoModal'
+import CobroModal from './components/CobroModal'
+import TabFotos from './components/TabFotos'
+import NotaModal from './components/NotaModal'
+import AlertaModal from './components/AlertaModal'
+import TabComprobantes from './components/TabComprobantes'
+import ComprobanteModal from './components/ComprobanteModal'
+
 const STATUS_LABELS = {
   presupuestada: { label: 'Presupuestada', color: '#6B7280' },
   en_ejecucion:  { label: 'En ejecución',  color: '#F97316' },
   finalizada:    { label: 'Finalizada',     color: '#22C55E' },
-}
-
-const GREMIO_STATUS = {
-  pendiente:  { label: 'Pendiente',  color: '#6B7280' },
-  en_trabajo: { label: 'En trabajo', color: '#F97316' },
-  terminado:  { label: 'Terminado',  color: '#22C55E' },
 }
 
 export default function ObraDetalle() {
@@ -272,7 +277,6 @@ export default function ObraDetalle() {
     setShowAsignar(true)
   }
 
-  const avanceTimer = useState(null)[1]
   function actualizarAvance(val) {
     setObra(prev => prev ? { ...prev, porcentaje_avance: val } : prev)
     clearTimeout(window._avanceTimer)
@@ -338,7 +342,6 @@ export default function ObraDetalle() {
           {obra.cliente_nombre && <p className="text-gray-400 text-[12px] mb-1">Cliente: {obra.cliente_nombre}</p>}
           {obra.direccion && <p className="text-gray-500 text-[11px] mb-2">{obra.direccion}</p>}
 
-          {/* Avance slider */}
           {obra.status === 'en_ejecucion' && (
             <div className="mt-2">
               <div className="flex justify-between text-[11px] mb-1">
@@ -411,7 +414,7 @@ export default function ObraDetalle() {
           </div>
         )}
 
-        {/* Tab: Pagos a gremios */}
+        {/* Tab: Pagos */}
         {tab === 'pagos' && (
           <div>
             {pagos.length === 0 ? (
@@ -437,7 +440,7 @@ export default function ObraDetalle() {
           </div>
         )}
 
-        {/* Tab: Cobros del inversor */}
+        {/* Tab: Cobros */}
         {tab === 'cobros' && (
           <div>
             <button onClick={() => setShowCobro(true)}
@@ -471,7 +474,7 @@ export default function ObraDetalle() {
 
         {/* Tab: Fotos */}
         {tab === 'fotos' && (
-          <TabFotos obraId={id} userId={user.id} fotos={fotos} gremiosAsig={gremiosAsig} onRefresh={cargar} onBorrar={borrarFoto} />
+          <TabFotos obraId={id} userId={user.id} fotos={fotos} onRefresh={cargar} onBorrar={borrarFoto} />
         )}
 
         {/* Tab: Notas */}
@@ -505,8 +508,8 @@ export default function ObraDetalle() {
 
         {/* Tab: Comprobantes */}
         {tab === 'comprobantes' && (
-          <TabComprobantes obraId={id} userId={user.id} comprobantes={comprobantes} gremiosAsig={gremiosAsig}
-            onRefresh={cargar} onBorrar={borrarComprobante} onAgregar={() => setShowComprobante(true)} />
+          <TabComprobantes comprobantes={comprobantes}
+            onBorrar={borrarComprobante} onAgregar={() => setShowComprobante(true)} />
         )}
 
         {/* Tab: Alertas */}
@@ -544,7 +547,7 @@ export default function ObraDetalle() {
         )}
       </div>
 
-      {/* Modal: Asignar gremio */}
+      {/* Modals */}
       {showAsignar && (
         <Modal onClose={() => setShowAsignar(false)} title="Asignar gremio">
           {misGremios.length === 0 ? (
@@ -567,521 +570,30 @@ export default function ObraDetalle() {
         </Modal>
       )}
 
-      {/* Modal: Pago a gremio */}
       {showPago && (
         <PagoModal obraId={id} gremio={showPago} userId={user.id}
           onClose={() => setShowPago(null)} onDone={async () => { setShowPago(null); await recalcularEstado(); cargar() }} />
       )}
 
-      {/* Modal: Cobro inversor */}
       {showCobro && (
         <CobroModal obraId={id} userId={user.id}
           onClose={() => setShowCobro(false)} onDone={async () => { setShowCobro(false); await recalcularEstado(); cargar() }} />
       )}
 
-      {/* Modal: Nueva nota */}
       {showNota && (
         <NotaModal obraId={id} userId={user.id} gremiosAsig={gremiosAsig}
           onClose={() => setShowNota(false)} onDone={() => { setShowNota(false); cargar() }} />
       )}
 
-      {/* Modal: Nueva alerta */}
       {showAlerta && (
         <AlertaModal obraId={id} userId={user.id}
           onClose={() => setShowAlerta(false)} onDone={() => { setShowAlerta(false); cargar() }} />
       )}
 
-      {/* Modal: Nuevo comprobante */}
       {showComprobante && (
         <ComprobanteModal obraId={id} userId={user.id} gremiosAsig={gremiosAsig}
           onClose={() => setShowComprobante(false)} onDone={() => { setShowComprobante(false); cargar() }} />
       )}
     </div>
-  )
-}
-
-function KPI({ label, value, color }) {
-  return (
-    <div className="rounded-xl p-3" style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
-      <p className="text-gray-500 text-[10px] mb-0.5">{label}</p>
-      <p className="font-bold text-[15px]" style={{ color }}>{value}</p>
-    </div>
-  )
-}
-
-function GremioAsignado({ og, onStatusChange, onMontoChange, onDesasignar, onPagar, pagos }) {
-  const [editMonto, setEditMonto] = useState(false)
-  const [monto, setMonto] = useState(String(og.monto_acordado || ''))
-  const gremio = og.gremios || {}
-  const gs = GREMIO_STATUS[og.status] || GREMIO_STATUS.pendiente
-  const totalPagado = pagos.reduce((s, p) => s + Number(p.monto), 0)
-  const saldo = (og.monto_acordado || 0) - totalPagado
-
-  return (
-    <div className="rounded-2xl p-4 mb-3" style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-lg">👷</span>
-          <div>
-            <p className="text-white text-[14px] font-semibold">{gremio.nombre || 'Gremio'}</p>
-            {gremio.tipo && <p className="text-gray-500 text-[11px]">{gremio.tipo}</p>}
-          </div>
-        </div>
-        <select value={og.status} onChange={e => onStatusChange(og.id, e.target.value)}
-          className="text-[10px] font-semibold px-2 py-1 rounded-full outline-none appearance-none cursor-pointer"
-          style={{ color: gs.color, background: gs.color + '18', border: 'none' }}>
-          {Object.entries(GREMIO_STATUS).map(([k, v]) => (
-            <option key={k} value={k}>{v.label}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Monto acordado */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-gray-500 text-[11px]">Acordado:</span>
-        {editMonto ? (
-          <div className="flex items-center gap-1">
-            <input type="number" value={monto} onChange={e => setMonto(e.target.value)}
-              className="w-24 rounded-lg px-2 py-1 text-white text-[12px] outline-none"
-              style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-            <button onClick={() => { onMontoChange(og.id, monto); setEditMonto(false) }}
-              className="text-orange-400 text-[11px] font-semibold">OK</button>
-          </div>
-        ) : (
-          <button onClick={() => setEditMonto(true)}
-            className="text-white text-[12px] font-medium underline decoration-dashed">
-            {og.monto_acordado ? fmt(og.monto_acordado) : 'Sin definir'}
-          </button>
-        )}
-      </div>
-
-      {/* Pagado / saldo */}
-      {og.monto_acordado > 0 && (
-        <div className="flex items-center gap-4 text-[11px] mb-3">
-          <span className="text-gray-500">Pagado: <span className="text-red-400 font-medium">{fmt(totalPagado)}</span></span>
-          <span className="text-gray-500">Saldo: <span className={`font-medium ${saldo > 0 ? 'text-yellow-400' : 'text-green-400'}`}>{fmt(saldo)}</span></span>
-        </div>
-      )}
-
-      <div className="flex gap-2">
-        <button onClick={onPagar}
-          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-[11px] font-semibold"
-          style={{ background: '#F9731612', color: '#F97316', border: '1px solid #F9731630' }}>
-          <DollarSign size={12} /> Pagar
-        </button>
-        <button onClick={() => onDesasignar(og.id)}
-          className="w-9 h-9 rounded-lg flex items-center justify-center"
-          style={{ background: '#EF444412', border: '1px solid #EF444430' }}>
-          <Trash2 size={14} color="#EF4444" />
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function Modal({ onClose, title, children }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/60" />
-      <div className="relative w-full max-w-md rounded-t-3xl md:rounded-3xl p-5 max-h-[70vh] overflow-y-auto"
-        style={{ background: '#13131A' }} onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-bold text-[16px]">{title}</h3>
-          <button onClick={onClose} className="text-gray-500 text-xl">✕</button>
-        </div>
-        {children}
-      </div>
-    </div>
-  )
-}
-
-function PagoModal({ obraId, gremio, userId, onClose, onDone }) {
-  const [monto, setMonto] = useState('')
-  const [metodo, setMetodo] = useState('efectivo')
-  const [notas, setNotas] = useState('')
-  const [guardando, setGuardando] = useState(false)
-
-  async function guardar() {
-    if (!monto || Number(monto) <= 0) return
-    setGuardando(true)
-    const { error } = await supabase.from('pagos_gremios').insert({
-      user_id: userId, obra_id: obraId, gremio_id: gremio.gremio_id,
-      monto: Number(monto), metodo, notas: notas.trim(),
-    })
-    if (error) { mensajeErrorGuardado(error); setGuardando(false); return }
-    window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Pago registrado', type: 'success' } }))
-    onDone()
-  }
-
-  return (
-    <Modal onClose={onClose} title={`Pago a ${gremio.gremios?.nombre || 'gremio'}`}>
-      <div className="flex flex-col gap-3">
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Monto *</label>
-          <input type="number" inputMode="numeric" min="0" value={monto} onChange={e => setMonto(e.target.value)}
-            placeholder="0" autoFocus
-            className="w-full rounded-xl px-4 py-3 text-white text-[16px] font-bold outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Método</label>
-          <select value={metodo} onChange={e => setMetodo(e.target.value)}
-            className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none appearance-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }}>
-            <option value="efectivo">Efectivo</option>
-            <option value="transferencia">Transferencia</option>
-            <option value="cheque">Cheque</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Notas</label>
-          <input type="text" value={notas} onChange={e => setNotas(e.target.value)}
-            placeholder="Opcional" maxLength={200}
-            className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        <button onClick={guardar} disabled={guardando || !monto}
-          className="w-full py-3 rounded-xl text-white font-bold text-[14px] disabled:opacity-40"
-          style={{ background: 'linear-gradient(135deg, #F97316, #EA580C)' }}>
-          {guardando ? 'Guardando...' : 'Registrar pago'}
-        </button>
-      </div>
-    </Modal>
-  )
-}
-
-function CobroModal({ obraId, userId, onClose, onDone }) {
-  const [monto, setMonto] = useState('')
-  const [metodo, setMetodo] = useState('efectivo')
-  const [notas, setNotas] = useState('')
-  const [guardando, setGuardando] = useState(false)
-
-  async function guardar() {
-    if (!monto || Number(monto) <= 0) return
-    setGuardando(true)
-    const { error } = await supabase.from('cobros_inversor').insert({
-      user_id: userId, obra_id: obraId,
-      monto: Number(monto), metodo, notas: notas.trim(),
-    })
-    if (error) { mensajeErrorGuardado(error); setGuardando(false); return }
-    window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Cobro registrado', type: 'success' } }))
-    onDone()
-  }
-
-  return (
-    <Modal onClose={onClose} title="Cobro del inversor">
-      <div className="flex flex-col gap-3">
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Monto *</label>
-          <input type="number" inputMode="numeric" min="0" value={monto} onChange={e => setMonto(e.target.value)}
-            placeholder="0" autoFocus
-            className="w-full rounded-xl px-4 py-3 text-white text-[16px] font-bold outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Método</label>
-          <select value={metodo} onChange={e => setMetodo(e.target.value)}
-            className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none appearance-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }}>
-            <option value="efectivo">Efectivo</option>
-            <option value="transferencia">Transferencia</option>
-            <option value="cheque">Cheque</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Notas</label>
-          <input type="text" value={notas} onChange={e => setNotas(e.target.value)}
-            placeholder="Opcional" maxLength={200}
-            className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        <button onClick={guardar} disabled={guardando || !monto}
-          className="w-full py-3 rounded-xl text-white font-bold text-[14px] disabled:opacity-40"
-          style={{ background: 'linear-gradient(135deg, #3B82F6, #2563EB)' }}>
-          {guardando ? 'Guardando...' : 'Registrar cobro'}
-        </button>
-      </div>
-    </Modal>
-  )
-}
-
-function TabFotos({ obraId, userId, fotos, gremiosAsig, onRefresh, onBorrar }) {
-  const [subiendo, setSubiendo] = useState(false)
-
-  async function subirFoto(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setSubiendo(true)
-    const ext = file.name.split('.').pop()
-    const path = `${userId}/${obraId}/${Date.now()}.${ext}`
-    const { error: upErr } = await supabase.storage.from('fotos-obras').upload(path, file)
-    if (upErr) { mensajeErrorGuardado(upErr); setSubiendo(false); return }
-
-    const { data: { publicUrl } } = supabase.storage.from('fotos-obras').getPublicUrl(path)
-    const { error } = await supabase.from('fotos_obra').insert({
-      user_id: userId, obra_id: obraId, url: publicUrl,
-    })
-    if (error) mensajeErrorGuardado(error)
-    else window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Foto subida', type: 'success' } }))
-    setSubiendo(false)
-    onRefresh()
-  }
-
-  return (
-    <div>
-      <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl mb-3 text-[13px] font-semibold cursor-pointer"
-        style={{ border: '1px dashed #22C55E', color: '#22C55E' }}>
-        <Upload size={16} />
-        {subiendo ? 'Subiendo...' : 'Subir foto'}
-        <input type="file" accept="image/*" onChange={subirFoto} className="hidden" disabled={subiendo} />
-      </label>
-
-      {fotos.length === 0 ? (
-        <p className="text-gray-600 text-[12px] text-center py-4">Sin fotos</p>
-      ) : (
-        <div className="grid grid-cols-3 gap-2">
-          {fotos.map(f => (
-            <div key={f.id} className="relative aspect-square rounded-xl overflow-hidden border border-gray-800">
-              <a href={f.url} target="_blank" rel="noopener noreferrer">
-                <img src={f.url} alt={f.descripcion || ''} className="w-full h-full object-cover" />
-              </a>
-              <button onClick={() => onBorrar(f.id, f.url)}
-                className="absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center bg-black/60">
-                <Trash2 size={10} color="#EF4444" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
-function NotaModal({ obraId, userId, gremiosAsig, onClose, onDone }) {
-  const [texto, setTexto] = useState('')
-  const [gremioId, setGremioId] = useState('')
-  const [guardando, setGuardando] = useState(false)
-
-  async function guardar() {
-    if (!texto.trim()) return
-    setGuardando(true)
-    const { error } = await supabase.from('notas_obra').insert({
-      user_id: userId, obra_id: obraId, texto: texto.trim(),
-      gremio_id: gremioId || null,
-    })
-    if (error) { mensajeErrorGuardado(error); setGuardando(false); return }
-    window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Nota agregada', type: 'success' } }))
-    onDone()
-  }
-
-  return (
-    <Modal onClose={onClose} title="Nueva nota">
-      <div className="flex flex-col gap-3">
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Nota *</label>
-          <textarea value={texto} onChange={e => setTexto(e.target.value)}
-            placeholder="Escribí tu nota..." rows={3} autoFocus
-            className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none resize-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        {gremiosAsig.length > 0 && (
-          <div>
-            <label className="text-gray-500 text-[11px] block mb-1">Gremio (opcional)</label>
-            <select value={gremioId} onChange={e => setGremioId(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none appearance-none"
-              style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }}>
-              <option value="">General</option>
-              {gremiosAsig.map(og => (
-                <option key={og.gremio_id} value={og.gremio_id}>{og.gremios?.nombre || 'Gremio'}</option>
-              ))}
-            </select>
-          </div>
-        )}
-        <button onClick={guardar} disabled={guardando || !texto.trim()}
-          className="w-full py-3 rounded-xl text-white font-bold text-[14px] disabled:opacity-40"
-          style={{ background: 'linear-gradient(135deg, #A855F7, #7C3AED)' }}>
-          {guardando ? 'Guardando...' : 'Guardar nota'}
-        </button>
-      </div>
-    </Modal>
-  )
-}
-
-function AlertaModal({ obraId, userId, onClose, onDone }) {
-  const [desc, setDesc] = useState('')
-  const [guardando, setGuardando] = useState(false)
-
-  async function guardar() {
-    if (!desc.trim()) return
-    setGuardando(true)
-    const { error } = await supabase.from('alertas_obra').insert({
-      user_id: userId, obra_id: obraId, descripcion: desc.trim(),
-    })
-    if (error) { mensajeErrorGuardado(error); setGuardando(false); return }
-    window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Alerta creada', type: 'success' } }))
-    onDone()
-  }
-
-  return (
-    <Modal onClose={onClose} title="Nueva alerta">
-      <div className="flex flex-col gap-3">
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Descripción *</label>
-          <input type="text" value={desc} onChange={e => setDesc(e.target.value)}
-            placeholder="Ej: Falta material en obra" autoFocus
-            className="w-full rounded-xl px-4 py-3 text-white text-[14px] outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        <button onClick={guardar} disabled={guardando || !desc.trim()}
-          className="w-full py-3 rounded-xl text-white font-bold text-[14px] disabled:opacity-40"
-          style={{ background: 'linear-gradient(135deg, #EF4444, #DC2626)' }}>
-          {guardando ? 'Guardando...' : 'Crear alerta'}
-        </button>
-      </div>
-    </Modal>
-  )
-}
-
-function TabComprobantes({ obraId, userId, comprobantes, gremiosAsig, onRefresh, onBorrar, onAgregar }) {
-  const [seleccionados, setSeleccionados] = useState([])
-
-  function toggleSel(id) {
-    setSeleccionados(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
-  }
-
-  function compartirSeleccionados() {
-    const items = seleccionados.length > 0
-      ? comprobantes.filter(c => seleccionados.includes(c.id))
-      : comprobantes
-    const texto = items.map(c =>
-      `• ${c.descripcion || 'Comprobante'} — ${fmt(c.monto)} (${fmtFecha(c.fecha)})${c.gremios?.nombre ? ' · ' + c.gremios.nombre : ''}\n  ${c.url}`
-    ).join('\n\n')
-    const msg = `Comprobantes de obra:\n\n${texto}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
-  }
-
-  const total = comprobantes.reduce((s, c) => s + Number(c.monto || 0), 0)
-
-  return (
-    <div>
-      <button onClick={onAgregar}
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-xl mb-3 text-[13px] font-semibold"
-        style={{ border: '1px dashed #F97316', color: '#F97316' }}>
-        <Plus size={16} /> Agregar comprobante
-      </button>
-
-      {comprobantes.length > 0 && (
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-gray-400 text-[12px]">Total: <span className="text-white font-bold">{fmt(total)}</span></span>
-          <button onClick={compartirSeleccionados}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[11px] font-semibold"
-            style={{ background: '#25D36618', color: '#25D366', border: '1px solid #25D36630' }}>
-            <Share2 size={12} /> Enviar {seleccionados.length > 0 ? `(${seleccionados.length})` : 'todos'}
-          </button>
-        </div>
-      )}
-
-      {comprobantes.length === 0 ? (
-        <p className="text-gray-600 text-[12px] text-center py-4">Sin comprobantes</p>
-      ) : comprobantes.map(c => (
-        <div key={c.id} className="rounded-xl p-3 mb-2 flex items-start gap-3"
-          style={{ background: '#13131A', border: `1px solid ${seleccionados.includes(c.id) ? '#F97316' : '#2A2A3A'}` }}>
-          <button onClick={() => toggleSel(c.id)}
-            className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 mt-0.5 ${seleccionados.includes(c.id) ? 'border-orange-500 bg-orange-500/20' : 'border-gray-600'}`}>
-            {seleccionados.includes(c.id) && <span className="text-orange-400 text-[10px]">✓</span>}
-          </button>
-          <a href={c.url} target="_blank" rel="noopener noreferrer"
-            className="w-12 h-12 rounded-lg overflow-hidden border border-gray-700 shrink-0">
-            <img src={c.url} alt="" className="w-full h-full object-cover"
-              onError={e => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1C1C27"><span style="font-size:16px">📄</span></div>' }} />
-          </a>
-          <div className="flex-1 min-w-0">
-            <p className="text-white text-[13px] font-medium truncate">{c.descripcion || 'Comprobante'}</p>
-            <p className="text-gray-500 text-[11px]">{fmtFecha(c.fecha)}{c.gremios?.nombre ? ` · ${c.gremios.nombre}` : ''}</p>
-            <p className="text-orange-400 text-[12px] font-semibold">{fmt(c.monto)}</p>
-          </div>
-          <button onClick={() => onBorrar(c.id, c.url)}
-            className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: '#EF444412' }}>
-            <Trash2 size={12} color="#EF4444" />
-          </button>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function ComprobanteModal({ obraId, userId, gremiosAsig, onClose, onDone }) {
-  const [descripcion, setDescripcion] = useState('')
-  const [monto, setMonto] = useState('')
-  const [gremioId, setGremioId] = useState('')
-  const [archivo, setArchivo] = useState(null)
-  const [guardando, setGuardando] = useState(false)
-
-  async function guardar() {
-    if (!archivo) return
-    setGuardando(true)
-    const ext = archivo.name.split('.').pop()
-    const path = `${userId}/${obraId}/${Date.now()}.${ext}`
-    const { error: upErr } = await supabase.storage.from('comprobantes').upload(path, archivo)
-    if (upErr) { mensajeErrorGuardado(upErr); setGuardando(false); return }
-
-    const { data: { publicUrl } } = supabase.storage.from('comprobantes').getPublicUrl(path)
-    const { error } = await supabase.from('comprobantes_obra').insert({
-      user_id: userId, obra_id: obraId, url: publicUrl,
-      descripcion: descripcion.trim(), monto: Number(monto) || 0,
-      gremio_id: gremioId || null,
-    })
-    if (error) { mensajeErrorGuardado(error); setGuardando(false); return }
-    window.dispatchEvent(new CustomEvent('app:toast', { detail: { msg: 'Comprobante agregado', type: 'success' } }))
-    onDone()
-  }
-
-  return (
-    <Modal onClose={onClose} title="Nuevo comprobante">
-      <div className="flex flex-col gap-3">
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Foto / archivo *</label>
-          <label className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-[13px] font-semibold cursor-pointer"
-            style={{ border: '1px dashed #F97316', color: '#F97316' }}>
-            <Upload size={16} />
-            {archivo ? archivo.name : 'Seleccionar archivo'}
-            <input type="file" accept="image/*,.pdf" onChange={e => setArchivo(e.target.files?.[0] || null)} className="hidden" />
-          </label>
-        </div>
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Descripción</label>
-          <input type="text" value={descripcion} onChange={e => setDescripcion(e.target.value)}
-            placeholder="Ej: Factura materiales"
-            className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        <div>
-          <label className="text-gray-500 text-[11px] block mb-1">Monto</label>
-          <input type="number" inputMode="numeric" value={monto} onChange={e => setMonto(e.target.value)}
-            placeholder="0"
-            className="w-full rounded-xl px-4 py-3 text-white text-[14px] outline-none"
-            style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }} />
-        </div>
-        {gremiosAsig.length > 0 && (
-          <div>
-            <label className="text-gray-500 text-[11px] block mb-1">Gremio (opcional)</label>
-            <select value={gremioId} onChange={e => setGremioId(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-white text-[13px] outline-none appearance-none"
-              style={{ background: '#0A0A0F', border: '1px solid #2A2A3A' }}>
-              <option value="">General</option>
-              {gremiosAsig.map(og => (
-                <option key={og.gremio_id} value={og.gremio_id}>{og.gremios?.nombre || 'Gremio'}</option>
-              ))}
-            </select>
-          </div>
-        )}
-        <button onClick={guardar} disabled={guardando || !archivo}
-          className="w-full py-3 rounded-xl text-white font-bold text-[14px] disabled:opacity-40"
-          style={{ background: 'linear-gradient(135deg, #F97316, #EA580C)' }}>
-          {guardando ? 'Subiendo...' : 'Guardar comprobante'}
-        </button>
-      </div>
-    </Modal>
   )
 }

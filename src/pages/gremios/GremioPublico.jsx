@@ -150,7 +150,7 @@ export default function GremioPublico() {
                   {o.fotos.map((f, fi) => (
                     <a key={fi} href={f.url} target="_blank" rel="noopener noreferrer"
                       className="shrink-0 w-20 h-20 rounded-lg overflow-hidden border border-gray-800">
-                      <img src={f.url} alt={f.descripcion || ''} className="w-full h-full object-cover" />
+                      <img src={f.url} alt={f.descripcion || ''} className="w-full h-full object-cover" loading="lazy" />
                     </a>
                   ))}
                 </div>
