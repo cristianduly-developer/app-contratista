@@ -10,7 +10,6 @@ const STATUS_LABELS = {
   presupuestada: { label: 'Presupuestada', color: '#6B7280' },
   en_ejecucion:  { label: 'En ejecución',  color: '#F97316' },
   finalizada:    { label: 'Finalizada',     color: '#22C55E' },
-  cobrada:       { label: 'Cobrada',        color: '#3B82F6' },
 }
 
 const GREMIO_STATUS = {
@@ -70,12 +69,42 @@ export default function ObraDetalle() {
 
   useEffect(cargar, [id, user?.id])
 
+  async function recalcularEstado() {
+    const [{ data: obraAct }, { data: grems }, { data: pags }, { data: cobs }] = await Promise.all([
+      supabase.from('obras').select('status, precio_inversor').eq('id', id).single(),
+      supabase.from('obra_gremios').select('monto_acordado').eq('obra_id', id),
+      supabase.from('pagos_gremios').select('monto').eq('obra_id', id),
+      supabase.from('cobros_inversor').select('monto').eq('obra_id', id),
+    ])
+    if (!obraAct) return
+
+    const tieneGremios = (grems || []).length > 0
+    const totalAcordado = (grems || []).reduce((s, g) => s + Number(g.monto_acordado || 0), 0)
+    const totalPagado = (pags || []).reduce((s, p) => s + Number(p.monto || 0), 0)
+    const totalCobrado = (cobs || []).reduce((s, c) => s + Number(c.monto || 0), 0)
+    const precioInv = Number(obraAct.precio_inversor || 0)
+
+    let nuevoStatus = obraAct.status
+    if (precioInv > 0 && totalCobrado >= precioInv && totalAcordado > 0 && totalPagado >= totalAcordado) {
+      nuevoStatus = 'finalizada'
+    } else if (tieneGremios && obraAct.status === 'presupuestada') {
+      nuevoStatus = 'en_ejecucion'
+    } else if (!tieneGremios && obraAct.status === 'en_ejecucion') {
+      nuevoStatus = 'presupuestada'
+    }
+
+    if (nuevoStatus !== obraAct.status) {
+      await supabase.from('obras').update({ status: nuevoStatus }).eq('id', id)
+    }
+  }
+
   async function asignarGremio(gremioId) {
     const { error } = await supabase.from('obra_gremios').insert({
       user_id: user.id, obra_id: id, gremio_id: gremioId,
     })
     if (error) { mensajeErrorGuardado(error); return }
     setShowAsignar(false)
+    await recalcularEstado()
     cargar()
   }
 
@@ -92,18 +121,21 @@ export default function ObraDetalle() {
   async function desasignarGremio(ogId) {
     if (!confirm('¿Eliminar este gremio de la obra?')) return
     await supabase.from('obra_gremios').delete().eq('id', ogId)
+    await recalcularEstado()
     cargar()
   }
 
   async function borrarPago(pagoId) {
     if (!confirm('¿Eliminar este pago?')) return
     await supabase.from('pagos_gremios').delete().eq('id', pagoId)
+    await recalcularEstado()
     cargar()
   }
 
   async function borrarCobro(cobroId) {
     if (!confirm('¿Eliminar este cobro?')) return
     await supabase.from('cobros_inversor').delete().eq('id', cobroId)
+    await recalcularEstado()
     cargar()
   }
 
@@ -227,6 +259,7 @@ export default function ObraDetalle() {
     </body></html>`
 
     const win = window.open('', '_blank')
+    if (!win) { window.dispatchEvent(new CustomEvent('app:toast', { detail: { type: 'error', msg: 'Desbloqueá los popups para exportar el PDF' } })); return }
     win.document.write(html)
     win.document.close()
     setTimeout(() => win.print(), 400)
@@ -533,13 +566,13 @@ export default function ObraDetalle() {
       {/* Modal: Pago a gremio */}
       {showPago && (
         <PagoModal obraId={id} gremio={showPago} userId={user.id}
-          onClose={() => setShowPago(null)} onDone={() => { setShowPago(null); cargar() }} />
+          onClose={() => setShowPago(null)} onDone={async () => { setShowPago(null); await recalcularEstado(); cargar() }} />
       )}
 
       {/* Modal: Cobro inversor */}
       {showCobro && (
         <CobroModal obraId={id} userId={user.id}
-          onClose={() => setShowCobro(false)} onDone={() => { setShowCobro(false); cargar() }} />
+          onClose={() => setShowCobro(false)} onDone={async () => { setShowCobro(false); await recalcularEstado(); cargar() }} />
       )}
 
       {/* Modal: Nueva nota */}

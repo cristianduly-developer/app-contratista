@@ -37,10 +37,10 @@ export default async function handler(req, res) {
   const user = await findUserByEmail(supa, org.email_contacto)
   if (!user) return res.status(200).json({ ok: true, msg: 'user_not_found_in_satellite' })
 
-  const row = { tenant_id: user.id, valid_until }
+  const row = { user_id: user.id, valid_until }
   if (plan) row.plan = plan
 
-  const { error } = await supa.from('tenant_access').upsert(row, { onConflict: 'tenant_id' })
+  const { error } = await supa.from('tenant_access').upsert(row, { onConflict: 'user_id' })
   if (error) return res.status(500).json({ ok: false, error: error.message })
 
   return res.status(200).json({ ok: true })

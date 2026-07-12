@@ -8,6 +8,7 @@ export default function GremioPublico() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [showFinalizadas, setShowFinalizadas] = useState(false)
 
   useEffect(() => {
     supabase.rpc('obtener_datos_gremio_por_token', { p_token: token })
@@ -51,7 +52,6 @@ export default function GremioPublico() {
   const totalAcordado = obras.reduce((s, o) => s + Number(o.monto_acordado || 0), 0)
   const totalPagado = obras.reduce((s, o) => s + Number(o.total_pagado || 0), 0)
   const saldoTotal = totalAcordado - totalPagado
-  const [showFinalizadas, setShowFinalizadas] = useState(false)
 
   return (
     <div className="min-h-screen pb-12" style={{ background: '#0D0D14' }}>
