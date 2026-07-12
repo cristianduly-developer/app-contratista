@@ -64,7 +64,7 @@ export default function ObraDetalle() {
       setAlertas(alertasRes.data || [])
       setComprobantes(compRes.data || [])
       setLoading(false)
-    })
+    }).catch(() => { setLoading(false) })
   }
 
   useEffect(cargar, [id, user?.id])
@@ -272,9 +272,13 @@ export default function ObraDetalle() {
     setShowAsignar(true)
   }
 
-  async function actualizarAvance(val) {
-    await supabase.from('obras').update({ porcentaje_avance: val }).eq('id', id)
-    cargar()
+  const avanceTimer = useState(null)[1]
+  function actualizarAvance(val) {
+    setObra(prev => prev ? { ...prev, porcentaje_avance: val } : prev)
+    clearTimeout(window._avanceTimer)
+    window._avanceTimer = setTimeout(async () => {
+      await supabase.from('obras').update({ porcentaje_avance: val }).eq('id', id)
+    }, 500)
   }
 
   if (loading) {

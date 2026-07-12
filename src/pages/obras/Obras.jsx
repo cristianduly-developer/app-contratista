@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Plus, Search, Filter } from 'lucide-react'
 import { supabase, mensajeErrorGuardado } from '../../lib/supabase'
 import { useAuth } from '../../lib/useAuth'
@@ -10,13 +10,13 @@ const STATUS_LABELS = {
   presupuestada: { label: 'Presupuestada', color: '#6B7280', bg: '#6B728018' },
   en_ejecucion:  { label: 'En ejecución',  color: '#F97316', bg: '#F9731618' },
   finalizada:    { label: 'Finalizada',     color: '#22C55E', bg: '#22C55E18' },
-  cobrada:       { label: 'Cobrada',        color: '#3B82F6', bg: '#3B82F618' },
 }
 
-const FILTROS = ['todas', 'presupuestada', 'en_ejecucion', 'finalizada', 'cobrada']
+const FILTROS = ['todas', 'presupuestada', 'en_ejecucion', 'finalizada']
 
 export default function Obras() {
   const navigate = useNavigate()
+  const { key } = useLocation()
   const { user } = useAuth()
   const { features } = usePlan()
   const [obras, setObras] = useState([])
@@ -27,6 +27,7 @@ export default function Obras() {
 
   useEffect(() => {
     if (!user) return
+    setLoading(true)
     supabase
       .from('obras_resumen')
       .select('*')
@@ -35,15 +36,15 @@ export default function Obras() {
       .then(({ data, error }) => {
         if (!error) setObras(data || [])
         setLoading(false)
-      })
-  }, [user?.id])
+      }).catch(() => { setLoading(false) })
+  }, [user?.id, key])
 
   const obrasFiltradas = obras
     .filter(o => filtro === 'todas' || o.status === filtro)
     .filter(o => !buscar || o.nombre.toLowerCase().includes(buscar.toLowerCase())
       || (o.cliente_nombre || '').toLowerCase().includes(buscar.toLowerCase()))
 
-  const activas = obras.filter(o => !['finalizada', 'cobrada'].includes(o.status)).length
+  const activas = obras.filter(o => o.status !== 'finalizada').length
   const limiteAlcanzado = features.max_obras !== Infinity && obras.length >= features.max_obras
 
   return (

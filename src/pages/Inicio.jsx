@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Briefcase, Users, DollarSign, TrendingUp, AlertTriangle, Plus, Calculator } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../lib/useAuth'
@@ -7,12 +7,14 @@ import { fmt, fmtCorto } from '../lib/fmt'
 
 export default function Inicio({ plan }) {
   const navigate = useNavigate()
+  const { key } = useLocation()
   const { user } = useAuth()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!user) return
+    setLoading(true)
     Promise.all([
       supabase.from('obras_resumen').select('*').eq('user_id', user.id),
       supabase.from('gremios_resumen').select('*').eq('user_id', user.id),
@@ -22,6 +24,7 @@ export default function Inicio({ plan }) {
       const gremios = gremiosRes.data || []
       const alertas = alertasRes.data || []
 
+      const presupuestadas = obras.filter(o => o.status === 'presupuestada')
       const activas = obras.filter(o => o.status === 'en_ejecucion')
       const totalInversor = obras.reduce((s, o) => s + Number(o.precio_inversor || 0), 0)
       const totalCobrado = obras.reduce((s, o) => s + Number(o.cobrado_inversor || 0), 0)
@@ -38,14 +41,14 @@ export default function Inicio({ plan }) {
       )
 
       setData({
-        obras, gremios, activas, alertas: alertas.length,
+        obras, gremios, presupuestadas, activas, alertas: alertas.length,
         totalInversor, totalCobrado, totalPagado, totalMateriales,
         gananciaTotal, pendienteCobrar, pendientePagar,
         obrasVencidas,
       })
       setLoading(false)
-    })
-  }, [user?.id])
+    }).catch(() => { setLoading(false) })
+  }, [user?.id, key])
 
   if (loading) {
     return (
@@ -123,9 +126,33 @@ export default function Inicio({ plan }) {
           <QuickAction icon={Calculator} label="Calculadora" color="#3B82F6" onClick={() => navigate('/calculadora')} />
         </div>
 
+        {/* Obras presupuestadas */}
+        {d.presupuestadas.length > 0 && (
+          <>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-white font-semibold text-[14px]">Presupuestadas</h2>
+              <button onClick={() => navigate('/obras')} className="text-orange-400 text-[12px] font-medium">Ver todas</button>
+            </div>
+            {d.presupuestadas.map(o => (
+              <button key={o.id} onClick={() => navigate(`/obras/${o.id}`)}
+                className="w-full text-left rounded-xl p-3 mb-2 active:scale-[.98] transition-all"
+                style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
+                <div className="flex items-center justify-between mb-1">
+                  <h3 className="text-white text-[13px] font-semibold truncate flex-1 mr-2">{o.nombre}</h3>
+                  <span className="text-gray-400 text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ background: '#6B728018' }}>Presupuestada</span>
+                </div>
+                <div className="flex justify-between text-[10px]">
+                  <span className="text-gray-500">Inversor: <span className="text-white font-medium">{fmtCorto(o.precio_inversor)}</span></span>
+                  {o.cliente_nombre && <span className="text-gray-500">{o.cliente_nombre}</span>}
+                </div>
+              </button>
+            ))}
+          </>
+        )}
+
         {/* Obras en ejecución */}
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-white font-semibold text-[14px]">Obras en ejecución</h2>
+        <div className="flex items-center justify-between mb-3 mt-2">
+          <h2 className="text-white font-semibold text-[14px]">En ejecución</h2>
           <button onClick={() => navigate('/obras')} className="text-orange-400 text-[12px] font-medium">Ver todas</button>
         </div>
 

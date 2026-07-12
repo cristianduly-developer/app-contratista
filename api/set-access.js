@@ -3,14 +3,8 @@ import { createClient } from '@supabase/supabase-js'
 async function findUserByEmail(supa, email) {
   const target = email?.toLowerCase()
   if (!target) return null
-  for (let page = 1; page <= 20; page++) {
-    const { data, error } = await supa.auth.admin.listUsers({ page, perPage: 1000 })
-    if (error) return null
-    const found = data.users.find(u => u.email?.toLowerCase() === target)
-    if (found) return found
-    if (data.users.length < 1000) break
-  }
-  return null
+  const { data } = await supa.from('perfiles').select('id').eq('email', target).limit(1).maybeSingle()
+  return data ? { id: data.id } : null
 }
 
 export default async function handler(req, res) {
@@ -33,7 +27,7 @@ export default async function handler(req, res) {
   const { data: org } = await central.from('organizaciones').select('email_contacto').eq('id', org_id).single()
   if (!org) return res.status(404).json({ ok: false, error: 'org_not_found' })
 
-  const supa = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+  const supa = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY)
   const user = await findUserByEmail(supa, org.email_contacto)
   if (!user) return res.status(200).json({ ok: true, msg: 'user_not_found_in_satellite' })
 

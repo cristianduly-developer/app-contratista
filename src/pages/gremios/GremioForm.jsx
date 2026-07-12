@@ -36,7 +36,7 @@ export default function GremioForm() {
           setTokenLink(data.token_link || '')
         }
         setLoading(false)
-      })
+      }).catch(() => { setLoading(false) })
   }, [id, user?.id])
 
   async function guardar() {
@@ -61,6 +61,7 @@ export default function GremioForm() {
   }
 
   async function regenerarToken() {
+    if (!confirm('El link anterior dejará de funcionar. ¿Continuar?')) return
     setRegenerando(true)
     const { data, error } = await supabase.rpc('regenerar_token_gremio', { p_gremio_id: id })
     if (error) { mensajeErrorGuardado(error) }

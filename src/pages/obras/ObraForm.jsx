@@ -41,7 +41,7 @@ export default function ObraForm() {
           notas: data.notas || '',
         })
         setLoading(false)
-      })
+      }).catch(() => { setLoading(false) })
   }, [id, user?.id])
 
   function set(campo, valor) {

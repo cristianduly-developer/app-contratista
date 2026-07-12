@@ -22,6 +22,7 @@ const Mas          = lazy(() => import('./pages/mas/Mas'))
 const Calculadora  = lazy(() => import('./pages/calculadora/Calculadora'))
 const ObraForm     = lazy(() => import('./pages/obras/ObraForm'))
 const ObraDetalle  = lazy(() => import('./pages/obras/ObraDetalle'))
+const GremioDetalle = lazy(() => import('./pages/gremios/GremioDetalle'))
 const GremioForm    = lazy(() => import('./pages/gremios/GremioForm'))
 const GremioPublico = lazy(() => import('./pages/gremios/GremioPublico'))
 const MiPlan        = lazy(() => import('./pages/mas/MiPlan'))
@@ -154,6 +155,7 @@ export default function App() {
                 <Route path="/obras/:id/editar" element={<ObraForm />} />
                 <Route path="/gremios" element={<Gremios />} />
                 <Route path="/gremios/nuevo" element={<GremioForm />} />
+                <Route path="/gremios/:id" element={<GremioDetalle />} />
                 <Route path="/gremios/:id/editar" element={<GremioForm />} />
                 <Route path="/viernes" element={<VistaViernes />} />
                 <Route path="/mas" element={<Mas plan={plan} />} />

@@ -53,7 +53,7 @@ export default function VistaViernes() {
       setPagos(pagosRes.data || [])
       setCobros(cobrosRes.data || [])
       setLoading(false)
-    })
+    }).catch(() => { setLoading(false) })
   }, [user?.id, semana.start])
 
   const totalPagado = pagos.reduce((s, p) => s + Number(p.monto), 0)

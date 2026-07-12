@@ -15,14 +15,17 @@ async function syncTenantAccess(userId, plan, diasRestantes) {
   } catch {}
 }
 
-const ipLog = new Map()
-function isRateLimited(ip) {
-  const ahora = Date.now()
-  const ventana = 60 * 60 * 1000
-  const hits = (ipLog.get(ip) || []).filter(t => ahora - t < ventana)
-  hits.push(ahora)
-  ipLog.set(ip, hits)
-  return hits.length > 30
+async function isRateLimited(central, ip) {
+  try {
+    const { data } = await central.rpc('check_rate_limit', {
+      p_key: `verificar-acceso:${ip}`,
+      p_max: 30,
+      p_window_seconds: 3600,
+    })
+    return data === true
+  } catch {
+    return false
+  }
 }
 
 export default async function handler(req, res) {
@@ -37,15 +40,18 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'GET') return res.status(405).json({ error: 'method_not_allowed' })
 
-  const authHeader2 = req.headers['authorization'] || ''
-  if (authHeader2.length > 2048) return res.status(400).json({ error: 'invalid_auth' })
-
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown'
-  if (isRateLimited(ip)) return res.status(429).json({ error: 'rate_limited' })
-
   const authHeader = req.headers['authorization'] || ''
+  if (authHeader.length > 2048) return res.status(400).json({ error: 'invalid_auth' })
   const token = authHeader.replace('Bearer ', '').trim()
   if (!token) return res.status(401).json({ error: 'no_auth' })
+
+  const central = createClient(
+    process.env.CENTRAL_URL,
+    process.env.CENTRAL_SERVICE_KEY,
+  )
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown'
+  if (await isRateLimited(central, ip)) return res.status(429).json({ error: 'rate_limited' })
 
   const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY
@@ -55,11 +61,6 @@ export default async function handler(req, res) {
   })
   const { data: { user }, error: userErr } = await supabaseApp.auth.getUser()
   if (userErr || !user?.email) return res.status(401).json({ error: 'no_auth' })
-
-  const central = createClient(
-    process.env.CENTRAL_URL,
-    process.env.CENTRAL_SERVICE_KEY,
-  )
 
   const { data, error } = await central.rpc('verificar_acceso_email', {
     email_param: user.email.toLowerCase(),

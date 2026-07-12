@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Plus, Search, Phone, Link2, Copy, RefreshCw } from 'lucide-react'
 import { supabase, mensajeErrorGuardado } from '../../lib/supabase'
 import { useAuth } from '../../lib/useAuth'
@@ -8,6 +8,7 @@ import { fmt, waMe } from '../../lib/fmt'
 
 export default function Gremios() {
   const navigate = useNavigate()
+  const { key } = useLocation()
   const { user } = useAuth()
   const { features } = usePlan()
   const [gremios, setGremios] = useState([])
@@ -16,6 +17,7 @@ export default function Gremios() {
 
   useEffect(() => {
     if (!user) return
+    setLoading(true)
     supabase
       .from('gremios_resumen')
       .select('*')
@@ -24,8 +26,8 @@ export default function Gremios() {
       .then(({ data }) => {
         setGremios(data || [])
         setLoading(false)
-      })
-  }, [user?.id])
+      }).catch(() => { setLoading(false) })
+  }, [user?.id, key])
 
   const filtrados = gremios.filter(g =>
     !buscar || g.nombre.toLowerCase().includes(buscar.toLowerCase())
@@ -79,6 +81,7 @@ export default function Gremios() {
           </div>
         ) : filtrados.map(g => (
           <GremioCard key={g.id} gremio={g} features={features}
+            onClick={() => navigate(`/gremios/${g.id}`)}
             onEdit={() => navigate(`/gremios/${g.id}/editar`)} />
         ))}
       </div>
@@ -86,7 +89,7 @@ export default function Gremios() {
   )
 }
 
-function GremioCard({ gremio, features, onEdit }) {
+function GremioCard({ gremio, features, onClick, onEdit }) {
   const [copiado, setCopiado] = useState(false)
 
   function copiarLink() {
@@ -98,7 +101,8 @@ function GremioCard({ gremio, features, onEdit }) {
   }
 
   return (
-    <div className="rounded-2xl p-4" style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
+    <div className="rounded-2xl p-4 cursor-pointer active:scale-[.98] transition-all" onClick={onClick}
+      style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>
       <div className="flex items-start justify-between mb-2">
         <div className="flex items-center gap-2.5 flex-1 min-w-0">
           <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
@@ -110,7 +114,7 @@ function GremioCard({ gremio, features, onEdit }) {
             {gremio.tipo && <p className="text-gray-500 text-[11px]">{gremio.tipo}</p>}
           </div>
         </div>
-        <button onClick={onEdit} className="text-gray-500 text-[11px] underline shrink-0 ml-2">Editar</button>
+        <button onClick={e => { e.stopPropagation(); onEdit() }} className="text-gray-500 text-[11px] underline shrink-0 ml-2">Editar</button>
       </div>
 
       {/* KPIs */}
