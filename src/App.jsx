@@ -106,7 +106,7 @@ export default function App() {
             </div>
           ) : pantalla === 'registro' ? (
             <div className="flex flex-col h-full overflow-y-auto items-center" style={{ background: '#0D0D14' }}>
-              <div className="w-full max-w-md"><PantallaRegistro email={user.email} setSuscripcion={setSuscripcion} /></div>
+              <div className="w-full max-w-md"><PantallaRegistro email={user.email} setSuscripcion={setSuscripcion} setOnboardingVisto={setOnboardingVisto} /></div>
             </div>
           ) : pantalla === 'demo_vencido' ? (
             <div className="flex flex-col h-full overflow-y-auto items-center" style={{ background: '#0D0D14' }}>
@@ -230,7 +230,7 @@ function PlaceholderPage({ texto }) {
   )
 }
 
-function PantallaRegistro({ email, setSuscripcion }) {
+function PantallaRegistro({ email, setSuscripcion, setOnboardingVisto }) {
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
@@ -249,6 +249,8 @@ function PantallaRegistro({ email, setSuscripcion }) {
       const data = await res.json()
       if (!res.ok || !data.ok) throw new Error(data.error || 'error_servidor')
 
+      localStorage.removeItem('onboarding_seen')
+      setOnboardingVisto(false)
       setSuscripcion({ tiene_acceso: true, estado: 'demo', plan: 'profesional', dias_restantes: 28 })
       setCargando(false)
     } catch (e) {
