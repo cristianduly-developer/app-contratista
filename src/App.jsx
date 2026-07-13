@@ -106,7 +106,7 @@ export default function App() {
             </div>
           ) : pantalla === 'registro' ? (
             <div className="flex flex-col h-full overflow-y-auto items-center" style={{ background: '#0D0D14' }}>
-              <div className="w-full max-w-md"><PantallaRegistro email={user.email} onRegistrado={verificar} /></div>
+              <div className="w-full max-w-md"><PantallaRegistro email={user.email} setSuscripcion={setSuscripcion} /></div>
             </div>
           ) : pantalla === 'demo_vencido' ? (
             <div className="flex flex-col h-full overflow-y-auto items-center" style={{ background: '#0D0D14' }}>
@@ -230,7 +230,7 @@ function PlaceholderPage({ texto }) {
   )
 }
 
-function PantallaRegistro({ email, onRegistrado }) {
+function PantallaRegistro({ email, setSuscripcion }) {
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState('')
 
@@ -249,8 +249,16 @@ function PantallaRegistro({ email, onRegistrado }) {
       const data = await res.json()
       if (!res.ok || !data.ok) throw new Error(data.error || 'error_servidor')
 
-      await new Promise(r => setTimeout(r, 500))
-      await onRegistrado()
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 1000))
+        const result = await verificarSuscripcion()
+        if (result?.tiene_acceso) {
+          setSuscripcion(result)
+          setCargando(false)
+          return
+        }
+      }
+      setSuscripcion(await verificarSuscripcion())
       setCargando(false)
     } catch (e) {
       setError(e.message === 'no_auth' ? 'Sesión expirada, volvé a ingresar.' : 'Ocurrió un error. Intentá de nuevo.')
