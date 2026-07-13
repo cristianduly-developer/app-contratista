@@ -50,8 +50,10 @@ export default function GremioPublico() {
   const obrasActivas = obras.filter(o => o.obra_status !== 'finalizada' && o.obra_status !== 'cobrada')
   const obrasFinalizadas = obras.filter(o => o.obra_status === 'finalizada' || o.obra_status === 'cobrada')
   const totalAcordado = obras.reduce((s, o) => s + Number(o.monto_acordado || 0), 0)
+  const totalAdicionales = obras.reduce((s, o) => s + Number(o.total_adicionales || 0), 0)
+  const totalReal = totalAcordado + totalAdicionales
   const totalPagado = obras.reduce((s, o) => s + Number(o.total_pagado || 0), 0)
-  const saldoTotal = totalAcordado - totalPagado
+  const saldoTotal = totalReal - totalPagado
 
   return (
     <div className="min-h-screen pb-12" style={{ background: '#0D0D14' }}>
@@ -72,15 +74,18 @@ export default function GremioPublico() {
           <p className="text-orange-400 text-[11px] font-semibold mb-2">Resumen de todas las obras</p>
           <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
-              <p className="text-gray-500 text-[10px]">Total acordado</p>
+              <p className="text-gray-500 text-[10px]">Acordado</p>
               <p className="text-white font-bold text-[14px]">{fmt(totalAcordado)}</p>
+              {totalAdicionales > 0 && (
+                <p className="text-yellow-400 text-[10px]">+{fmt(totalAdicionales)} adic.</p>
+              )}
             </div>
             <div className="text-center">
-              <p className="text-gray-500 text-[10px]">Total pagado</p>
+              <p className="text-gray-500 text-[10px]">Pagado</p>
               <p className="text-green-400 font-bold text-[14px]">{fmt(totalPagado)}</p>
             </div>
             <div className="text-center">
-              <p className="text-gray-500 text-[10px]">Saldo total</p>
+              <p className="text-gray-500 text-[10px]">Saldo</p>
               <p className={`font-bold text-[14px] ${saldoTotal > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
                 {fmt(saldoTotal)}
               </p>
@@ -109,7 +114,7 @@ export default function GremioPublico() {
             </div>
             {o.obra_direccion && <p className="text-gray-500 text-[11px] mb-2">{o.obra_direccion}</p>}
 
-            <div className="grid grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-3 gap-2 mb-2">
               <div>
                 <p className="text-gray-500 text-[10px]">Acordado</p>
                 <p className="text-white text-[12px] font-medium">{fmt(o.monto_acordado)}</p>
@@ -125,6 +130,21 @@ export default function GremioPublico() {
                 </p>
               </div>
             </div>
+
+            {/* Adicionales */}
+            {o.adicionales?.length > 0 && (
+              <div className="mb-3 rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
+                <p className="text-yellow-400 text-[11px] font-semibold mb-1">
+                  Adicionales: {fmt(o.total_adicionales)} → Costo real: {fmt(o.costo_real)}
+                </p>
+                {o.adicionales.map((a, ai) => (
+                  <div key={ai} className="flex items-center justify-between py-0.5">
+                    <span className="text-gray-400 text-[10px]">{a.motivo} ({fmtFecha(a.fecha)})</span>
+                    <span className="text-yellow-400 text-[10px] font-medium">+{fmt(a.monto)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Pagos detallados */}
             {o.pagos?.length > 0 && (
@@ -187,7 +207,7 @@ export default function GremioPublico() {
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
                     style={{ color: '#22C55E', background: '#22C55E18' }}>Finalizada</span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="grid grid-cols-3 gap-2 mb-2">
                   <div>
                     <p className="text-gray-500 text-[10px]">Acordado</p>
                     <p className="text-white text-[12px] font-medium">{fmt(o.monto_acordado)}</p>
@@ -201,6 +221,11 @@ export default function GremioPublico() {
                     <p className={`text-[12px] font-medium ${o.saldo > 0 ? 'text-yellow-400' : 'text-green-400'}`}>{fmt(o.saldo)}</p>
                   </div>
                 </div>
+                {o.adicionales?.length > 0 && (
+                  <p className="text-yellow-400 text-[10px] mb-2">
+                    +{fmt(o.total_adicionales)} en adicionales → Real: {fmt(o.costo_real)}
+                  </p>
+                )}
                 {o.pagos?.length > 0 && (
                   <div>
                     <p className="text-gray-500 text-[11px] font-semibold mb-1">Pagos</p>

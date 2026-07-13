@@ -197,6 +197,7 @@
   <a class="mobile-pill" href="#dashboard">🏠 Inicio</a>
   <a class="mobile-pill" href="#obras">🧱 Obras</a>
   <a class="mobile-pill" href="#gremios">👷 Gremios</a>
+  <a class="mobile-pill" href="#adicionales">📋 Adicionales</a>
   <a class="mobile-pill" href="#pagos">💰 Pagos</a>
   <a class="mobile-pill" href="#viernes">📅 Viernes</a>
   <a class="mobile-pill" href="#calculadora">🧮 Calculadora</a>
@@ -217,6 +218,7 @@
     <a href="#dashboard">🏠 Dashboard</a>
     <a href="#obras">🧱 Obras</a>
     <a href="#gremios">👷 Gremios</a>
+    <a href="#adicionales">📋 Adicionales</a>
     <a href="#pagos">💰 Pagos y cobros</a>
     <a href="#viernes">📅 Vista viernes</a>
     <a href="#calculadora">🧮 Calculadora por m²</a>
@@ -288,7 +290,7 @@
         <h3>Dentro de cada obra</h3>
         <p style="font-size:14px;color:var(--text-2)">Cada obra tiene 6 tabs con toda la información:</p>
         <ul>
-          <li><strong>Gremios</strong> — asignar gremios, definir monto acordado, cambiar estado</li>
+          <li><strong>Gremios</strong> — asignar gremios, definir monto acordado, registrar adicionales, cambiar estado</li>
           <li><strong>Pagos</strong> — historial de pagos a cada gremio</li>
           <li><strong>Cobros</strong> — registros de cobros al inversor</li>
           <li><strong>Fotos</strong> — galería de la obra (desde cámara o galería) <span class="badge badge-pro">Profesional+</span></li>
@@ -334,6 +336,57 @@
         <div class="tip">
           <span class="tip-icon">💡</span>
           <span>El límite de gremios depende de tu plan: 5 en Básico, 8 en Profesional, ilimitados en Premium.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADICIONALES -->
+    <section class="section" id="adicionales">
+      <div class="section-header">
+        <div class="section-icon">📋</div>
+        <div>
+          <h2>Adicionales por gremio</h2>
+          <p>Controlá los extras sin perder el presupuesto original</p>
+        </div>
+      </div>
+      <div class="section-body">
+        <p style="font-size:14px;color:var(--text-2)">En la construcción es común que surjan trabajos extra que no estaban en el presupuesto original: repintar una puerta, un caño que no estaba previsto, material adicional. Los adicionales te permiten registrar esos costos sin modificar el monto acordado original.</p>
+
+        <h3>Cómo funciona</h3>
+        <ul>
+          <li><strong>Monto acordado</strong> — el presupuesto original que pactaste con el gremio para esa obra. No se modifica.</li>
+          <li><strong>Adicional</strong> — cada extra que surge durante la obra, con monto y motivo. Podés agregar varios.</li>
+          <li><strong>Costo real</strong> — se calcula automáticamente: acordado + suma de adicionales.</li>
+        </ul>
+
+        <h3>Ejemplo</h3>
+        <table>
+          <tr><th>Concepto</th><th style="text-align:right">Monto</th></tr>
+          <tr><td>Acordado con el pintor</td><td style="text-align:right"><strong>$500.000</strong></td></tr>
+          <tr><td style="color:var(--text-2)">↳ Repintar puerta principal</td><td style="text-align:right;color:#d97706">+$30.000</td></tr>
+          <tr><td style="color:var(--text-2)">↳ Material extra (látex)</td><td style="text-align:right;color:#d97706">+$50.000</td></tr>
+          <tr style="border-top:2px solid var(--border)"><td><strong>Costo real</strong></td><td style="text-align:right"><strong style="color:var(--accent)">$580.000</strong></td></tr>
+        </table>
+
+        <h3>Dónde se ven</h3>
+        <ul>
+          <li><strong>Detalle de la obra</strong> — en la card de cada gremio, con botón para expandir el desglose</li>
+          <li><strong>Link público del gremio</strong> — el gremio ve sus adicionales con motivo, fecha y monto</li>
+          <li><strong>PDF exportado</strong> — aparecen como sub-filas debajo de cada gremio</li>
+          <li><strong>Detalle del gremio</strong> — el KPI de adicionales se muestra si hay extras registrados</li>
+        </ul>
+
+        <h3>Cómo agregar un adicional</h3>
+        <ul>
+          <li>Entrá al detalle de la obra</li>
+          <li>En la tab <strong>Gremios</strong>, tocá el botón amarillo <strong>"Adicional"</strong> en el gremio correspondiente</li>
+          <li>Completá el <strong>motivo</strong> (qué fue el extra) y el <strong>monto</strong></li>
+          <li>El costo real se actualiza automáticamente</li>
+        </ul>
+
+        <div class="tip">
+          <span class="tip-icon">💡</span>
+          <span>Usá los adicionales para dejar registro claro de por qué el costo final fue mayor al presupuestado. Es ideal para justificar ante el inversor o para futuras referencias.</span>
         </div>
       </div>
     </section>
@@ -622,6 +675,10 @@
         <details>
           <summary>¿Qué pasa cuando vence la demo?</summary>
           <div class="faq-body">No perdés tus datos. Se bloquean las funciones de escritura (crear/editar) hasta que actives un plan pago. Podés seguir consultando toda tu información.</div>
+        </details>
+        <details>
+          <summary>¿Qué son los adicionales?</summary>
+          <div class="faq-body">Son costos extra que surgen durante la obra y no estaban en el presupuesto original. Por ejemplo, si el pintor tiene que repintar una puerta o se necesita material adicional. Se registran con monto y motivo, y se suman al costo real sin modificar el monto acordado original. Se ven en la obra, en el link público del gremio y en el PDF exportado.</div>
         </details>
         <details>
           <summary>¿Puedo subir fotos desde el celular?</summary>

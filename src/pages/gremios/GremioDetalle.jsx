@@ -94,7 +94,7 @@ export default function GremioDetalle() {
           </div>
 
           {/* KPIs */}
-          <div className="grid grid-cols-3 gap-2 mb-3">
+          <div className="grid grid-cols-2 gap-2 mb-2">
             <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
               <p className="text-gray-500 text-[9px]">Acordado</p>
               <p className="text-white text-[13px] font-bold">{fmt(gremio.total_acordado)}</p>
@@ -103,6 +103,14 @@ export default function GremioDetalle() {
               <p className="text-gray-500 text-[9px]">Pagado</p>
               <p className="text-red-400 text-[13px] font-bold">{fmt(gremio.total_pagado)}</p>
             </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {gremio.total_adicionales > 0 && (
+              <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
+                <p className="text-gray-500 text-[9px]">Adicionales</p>
+                <p className="text-yellow-400 text-[13px] font-bold">{fmt(gremio.total_adicionales)}</p>
+              </div>
+            )}
             <div className="rounded-lg px-3 py-2" style={{ background: '#0A0A0F' }}>
               <p className="text-gray-500 text-[9px]">Saldo</p>
               <p className={`text-[13px] font-bold ${gremio.saldo_pendiente > 0 ? 'text-yellow-400' : 'text-green-400'}`}>

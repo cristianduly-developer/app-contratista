@@ -17,6 +17,7 @@ import NotaModal from './components/NotaModal'
 import AlertaModal from './components/AlertaModal'
 import TabComprobantes from './components/TabComprobantes'
 import ComprobanteModal from './components/ComprobanteModal'
+import AdicionalModal from './components/AdicionalModal'
 
 const STATUS_LABELS = {
   presupuestada: { label: 'Presupuestada', color: '#6B7280' },
@@ -38,6 +39,7 @@ export default function ObraDetalle() {
   const [notas, setNotas] = useState([])
   const [alertas, setAlertas] = useState([])
   const [comprobantes, setComprobantes] = useState([])
+  const [adicionales, setAdicionales] = useState([])
   const [loading, setLoading] = useState(true)
   const [tab, setTab] = useState('gremios')
 
@@ -48,6 +50,7 @@ export default function ObraDetalle() {
   const [showNota, setShowNota] = useState(false)
   const [showAlerta, setShowAlerta] = useState(false)
   const [showComprobante, setShowComprobante] = useState(false)
+  const [showAdicional, setShowAdicional] = useState(null)
 
   function cargar() {
     if (!user || !id) return
@@ -60,7 +63,8 @@ export default function ObraDetalle() {
       supabase.from('notas_obra').select('*, gremios(nombre)').eq('obra_id', id).order('created_at', { ascending: false }),
       supabase.from('alertas_obra').select('*').eq('obra_id', id).order('created_at', { ascending: false }),
       supabase.from('comprobantes_obra').select('*, gremios(nombre)').eq('obra_id', id).order('fecha', { ascending: false }),
-    ]).then(([obraRes, gremRes, pagosRes, cobrosRes, fotosRes, notasRes, alertasRes, compRes]) => {
+      supabase.from('adicionales_gremio').select('*').eq('obra_id', id).order('fecha', { ascending: false }),
+    ]).then(([obraRes, gremRes, pagosRes, cobrosRes, fotosRes, notasRes, alertasRes, compRes, adicRes]) => {
       if (obraRes.data) setObra(obraRes.data)
       setGremiosAsig(gremRes.data || [])
       setPagos(pagosRes.data || [])
@@ -69,6 +73,7 @@ export default function ObraDetalle() {
       setNotas(notasRes.data || [])
       setAlertas(alertasRes.data || [])
       setComprobantes(compRes.data || [])
+      setAdicionales(adicRes.data || [])
       setLoading(false)
     }).catch(() => { setLoading(false) })
   }
@@ -167,6 +172,12 @@ export default function ObraDetalle() {
     cargar()
   }
 
+  async function borrarAdicional(adicionalId) {
+    if (!confirm('¿Eliminar este adicional?')) return
+    await supabase.from('adicionales_gremio').delete().eq('id', adicionalId)
+    cargar()
+  }
+
   async function borrarComprobante(compId, url) {
     if (!confirm('¿Eliminar este comprobante?')) return
     await supabase.from('comprobantes_obra').delete().eq('id', compId)
@@ -228,11 +239,14 @@ export default function ObraDetalle() {
 
     <h2>Gremios asignados</h2>
     ${gremiosAsig.length === 0 ? '<p style="color:#999">Sin gremios asignados</p>' : `
-    <table><tr><th>Gremio</th><th>Tipo</th><th>Estado</th><th class="right">Acordado</th><th class="right">Pagado</th><th class="right">Saldo</th></tr>
+    <table><tr><th>Gremio</th><th>Tipo</th><th>Estado</th><th class="right">Acordado</th><th class="right">Adicionales</th><th class="right">Costo real</th><th class="right">Pagado</th><th class="right">Saldo</th></tr>
     ${gremiosAsig.map(og => {
       const g = og.gremios || {}
       const pagadoG = pagos.filter(p => p.gremio_id === og.gremio_id).reduce((s, p) => s + Number(p.monto), 0)
-      return `<tr><td>${g.nombre || '-'}</td><td>${g.tipo || '-'}</td><td>${(GREMIO_STATUS[og.status] || {}).label || og.status}</td><td class="right">${fmt(og.monto_acordado)}</td><td class="right">${fmt(pagadoG)}</td><td class="right">${fmt((og.monto_acordado || 0) - pagadoG)}</td></tr>`
+      const adics = adicionales.filter(a => a.obra_gremio_id === og.id)
+      const totalAdic = adics.reduce((s, a) => s + Number(a.monto), 0)
+      const costoReal = (og.monto_acordado || 0) + totalAdic
+      return `<tr><td>${g.nombre || '-'}</td><td>${g.tipo || '-'}</td><td>${(GREMIO_STATUS[og.status] || {}).label || og.status}</td><td class="right">${fmt(og.monto_acordado)}</td><td class="right">${totalAdic > 0 ? fmt(totalAdic) : '-'}</td><td class="right">${totalAdic > 0 ? fmt(costoReal) : fmt(og.monto_acordado)}</td><td class="right">${fmt(pagadoG)}</td><td class="right">${fmt(costoReal - pagadoG)}</td></tr>${adics.length > 0 ? adics.map(a => `<tr style="font-size:10px;color:#999"><td colspan="4" style="padding-left:24px">↳ ${a.motivo}</td><td class="right" colspan="4" style="color:#D97706">+${fmt(a.monto)}</td></tr>`).join('') : ''}`
     }).join('')}
     </table>`}
 
@@ -401,7 +415,10 @@ export default function ObraDetalle() {
                 onMontoChange={actualizarMontoAcordado}
                 onDesasignar={desasignarGremio}
                 onPagar={() => setShowPago(og)}
+                onAdicional={() => setShowAdicional(og)}
+                onBorrarAdicional={borrarAdicional}
                 pagos={pagos.filter(p => p.gremio_id === og.gremio_id)}
+                adicionales={adicionales.filter(a => a.obra_gremio_id === og.id)}
               />
             ))}
           </div>
@@ -586,6 +603,12 @@ export default function ObraDetalle() {
       {showComprobante && (
         <ComprobanteModal obraId={id} userId={user.id} gremiosAsig={gremiosAsig}
           onClose={() => setShowComprobante(false)} onDone={() => { setShowComprobante(false); cargar() }} />
+      )}
+
+      {showAdicional && (
+        <AdicionalModal obraId={id} obraGremioId={showAdicional.id}
+          gremioId={showAdicional.gremio_id} userId={user.id}
+          onClose={() => setShowAdicional(null)} onDone={() => { setShowAdicional(null); cargar() }} />
       )}
     </div>
   )
