@@ -49,21 +49,33 @@ export default async function handler(req, res) {
     if (!user) return res.status(200).json({ ok: true, msg: 'usuario no encontrado en satellite' })
 
     const uid = user.id
+    console.log('[eliminar-org] Borrando datos de uid:', uid, 'email:', contactEmail)
 
-    await supa.from('fotos_obra').delete().eq('user_id', uid)
-    await supa.from('notas_obra').delete().eq('user_id', uid)
-    await supa.from('alertas_obra').delete().eq('user_id', uid)
-    await supa.from('materiales_obra').delete().eq('user_id', uid)
-    await supa.from('pagos_gremios').delete().eq('user_id', uid)
-    await supa.from('cobros_inversor').delete().eq('user_id', uid)
-    await supa.from('obra_gremios').delete().eq('user_id', uid)
-    await supa.from('obras').delete().eq('user_id', uid)
-    await supa.from('gremios').delete().eq('user_id', uid)
-    await supa.from('precios_m2').delete().eq('user_id', uid)
-    await supa.from('tenant_access').delete().eq('tenant_id', uid)
-    await supa.from('perfiles').delete().eq('id', uid)
+    const tablas = [
+      ['fotos_obra', 'user_id'],
+      ['notas_obra', 'user_id'],
+      ['alertas_obra', 'user_id'],
+      ['materiales_obra', 'user_id'],
+      ['pagos_gremios', 'user_id'],
+      ['cobros_inversor', 'user_id'],
+      ['obra_gremios', 'user_id'],
+      ['obras', 'user_id'],
+      ['gremios', 'user_id'],
+      ['precios_m2', 'user_id'],
+      ['tenant_access', 'tenant_id'],
+      ['perfiles', 'id'],
+    ]
 
-    await supa.auth.admin.deleteUser(uid)
+    for (const [tabla, col] of tablas) {
+      const { error, count } = await supa.from(tabla).delete({ count: 'exact' }).eq(col, uid)
+      if (error) console.error(`[eliminar-org] Error borrando ${tabla}:`, error.message)
+      else console.log(`[eliminar-org] ${tabla}: ${count ?? '?'} rows deleted`)
+    }
+
+    const { error: authErr } = await supa.auth.admin.deleteUser(uid)
+    if (authErr) console.error('[eliminar-org] Error borrando auth user:', authErr.message)
+    else console.log('[eliminar-org] Auth user deleted')
+
     return res.status(200).json({ ok: true })
   } catch (err) {
     console.error('[eliminar-org]', err)
