@@ -249,16 +249,7 @@ function PantallaRegistro({ email, setSuscripcion }) {
       const data = await res.json()
       if (!res.ok || !data.ok) throw new Error(data.error || 'error_servidor')
 
-      for (let i = 0; i < 5; i++) {
-        await new Promise(r => setTimeout(r, 1000))
-        const result = await verificarSuscripcion()
-        if (result?.tiene_acceso) {
-          setSuscripcion(result)
-          setCargando(false)
-          return
-        }
-      }
-      setSuscripcion(await verificarSuscripcion())
+      setSuscripcion({ tiene_acceso: true, estado: 'demo', plan: 'profesional', dias_restantes: 28 })
       setCargando(false)
     } catch (e) {
       setError(e.message === 'no_auth' ? 'Sesión expirada, volvé a ingresar.' : 'Ocurrió un error. Intentá de nuevo.')
