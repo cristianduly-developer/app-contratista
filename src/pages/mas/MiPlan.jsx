@@ -6,7 +6,7 @@ import { useAuth } from '../../lib/useAuth'
 import { verificarSuscripcion } from '../../lib/useSuscripcion'
 import { supabase } from '../../lib/supabase'
 
-const WA_SOPORTE = '5492235767784'
+const WA_SOPORTE = '5492236965481'
 
 const PLAN_META = {
   basico:      { label: 'Básico',      color: '#6B7280', icon: Shield, emoji: '🔩' },

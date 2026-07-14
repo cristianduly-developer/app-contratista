@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { Calculator, CreditCard, Settings, HelpCircle, MessageCircle } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
-const WA_SOPORTE = '5492235767784'
+const WA_SOPORTE = '5492236965481'
 
 const ITEMS = [
   { path: '/calculadora', icon: Calculator,    label: 'Calculadora por m²', color: '#F97316' },
