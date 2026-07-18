@@ -14,7 +14,9 @@ async function findUserByEmail(supa, email) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  const origin = req.headers['origin'] || ''
+  const allowed = process.env.SAAS_ADMIN_URL || 'https://saas.solucionesmdp.com.ar'
+  if (origin === allowed) res.setHeader('Access-Control-Allow-Origin', origin)
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'content-type, x-app-key, x-internal-key')
   if (req.method === 'OPTIONS') return res.status(200).end()
@@ -62,7 +64,7 @@ export default async function handler(req, res) {
       ['obras', 'user_id'],
       ['gremios', 'user_id'],
       ['precios_m2', 'user_id'],
-      ['tenant_access', 'tenant_id'],
+      ['tenant_access', 'user_id'],
       ['perfiles', 'id'],
     ]
 

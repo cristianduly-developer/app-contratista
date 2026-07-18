@@ -6,6 +6,8 @@ import { useAuth } from '../../lib/useAuth'
 import { usePlan } from '../../lib/PlanContext'
 import { fmt, fmtFecha } from '../../lib/fmt'
 
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+
 import Spinner from '../../components/Spinner'
 import Modal from './components/Modal'
 import KPI from './components/KPI'
@@ -195,7 +197,7 @@ export default function ObraDetalle() {
     const totalCobrado = cobros.reduce((s, c) => s + Number(c.monto || 0), 0)
     const totalComprobantes = comprobantes.reduce((s, c) => s + Number(c.monto || 0), 0)
 
-    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Obra - ${obra.nombre}</title>
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Obra - ${esc(obra.nombre)}</title>
     <style>
       body{font-family:system-ui,sans-serif;max-width:700px;margin:0 auto;padding:24px;color:#111;font-size:13px}
       h1{font-size:20px;margin:0 0 4px;color:#EA580C}
@@ -217,8 +219,8 @@ export default function ObraDetalle() {
       <div style="width:40px;height:40px;background:#EA580C;border-radius:10px;display:flex;align-items:center;justify-content:center">
         <span style="font-size:22px">🏗</span>
       </div>
-      <div><h1>${obra.nombre}</h1>
-      <p class="meta" style="margin:0">${obra.cliente_nombre ? 'Cliente: ' + obra.cliente_nombre + ' · ' : ''}${obra.direccion || ''}</p></div>
+      <div><h1>${esc(obra.nombre)}</h1>
+      <p class="meta" style="margin:0">${obra.cliente_nombre ? 'Cliente: ' + esc(obra.cliente_nombre) + ' · ' : ''}${esc(obra.direccion || '')}</p></div>
     </div>
     <p class="meta">
       Estado: <span class="badge" style="background:${st.color}20;color:${st.color}">${st.label}</span>
@@ -246,32 +248,32 @@ export default function ObraDetalle() {
       const adics = adicionales.filter(a => a.obra_gremio_id === og.id)
       const totalAdic = adics.reduce((s, a) => s + Number(a.monto), 0)
       const costoReal = (og.monto_acordado || 0) + totalAdic
-      return `<tr><td>${g.nombre || '-'}</td><td>${g.tipo || '-'}</td><td>${(GREMIO_STATUS[og.status] || {}).label || og.status}</td><td class="right">${fmt(og.monto_acordado)}</td><td class="right">${totalAdic > 0 ? fmt(totalAdic) : '-'}</td><td class="right">${totalAdic > 0 ? fmt(costoReal) : fmt(og.monto_acordado)}</td><td class="right">${fmt(pagadoG)}</td><td class="right">${fmt(costoReal - pagadoG)}</td></tr>${adics.length > 0 ? adics.map(a => `<tr style="font-size:10px;color:#999"><td colspan="4" style="padding-left:24px">↳ ${a.motivo}</td><td class="right" colspan="4" style="color:#D97706">+${fmt(a.monto)}</td></tr>`).join('') : ''}`
+      return `<tr><td>${esc(g.nombre || '-')}</td><td>${esc(g.tipo || '-')}</td><td>${esc((GREMIO_STATUS[og.status] || {}).label || og.status)}</td><td class="right">${fmt(og.monto_acordado)}</td><td class="right">${totalAdic > 0 ? fmt(totalAdic) : '-'}</td><td class="right">${totalAdic > 0 ? fmt(costoReal) : fmt(og.monto_acordado)}</td><td class="right">${fmt(pagadoG)}</td><td class="right">${fmt(costoReal - pagadoG)}</td></tr>${adics.length > 0 ? adics.map(a => `<tr style="font-size:10px;color:#999"><td colspan="4" style="padding-left:24px">↳ ${esc(a.motivo)}</td><td class="right" colspan="4" style="color:#D97706">+${fmt(a.monto)}</td></tr>`).join('') : ''}`
     }).join('')}
     </table>`}
 
     <h2>Pagos a gremios</h2>
     ${pagos.length === 0 ? '<p style="color:#999">Sin pagos</p>' : `
     <table><tr><th>Fecha</th><th>Gremio</th><th>Método</th><th class="right">Monto</th></tr>
-    ${pagos.map(p => `<tr><td>${fmtFecha(p.fecha)}</td><td>${p.gremios?.nombre || '-'}</td><td>${p.metodo}</td><td class="right">${fmt(p.monto)}</td></tr>`).join('')}
+    ${pagos.map(p => `<tr><td>${fmtFecha(p.fecha)}</td><td>${esc(p.gremios?.nombre || '-')}</td><td>${esc(p.metodo)}</td><td class="right">${fmt(p.monto)}</td></tr>`).join('')}
     </table>`}
 
     <h2>Cobros del inversor</h2>
     ${cobros.length === 0 ? '<p style="color:#999">Sin cobros</p>' : `
     <table><tr><th>Fecha</th><th>Método</th><th>Notas</th><th class="right">Monto</th></tr>
-    ${cobros.map(c => `<tr><td>${fmtFecha(c.fecha)}</td><td>${c.metodo}</td><td>${c.notas || '-'}</td><td class="right">${fmt(c.monto)}</td></tr>`).join('')}
+    ${cobros.map(c => `<tr><td>${fmtFecha(c.fecha)}</td><td>${esc(c.metodo)}</td><td>${esc(c.notas || '-')}</td><td class="right">${fmt(c.monto)}</td></tr>`).join('')}
     </table>`}
 
     ${comprobantes.length > 0 ? `<h2>Comprobantes</h2>
     <table><tr><th>Fecha</th><th>Descripción</th><th>Gremio</th><th class="right">Monto</th></tr>
-    ${comprobantes.map(c => `<tr><td>${fmtFecha(c.fecha)}</td><td>${c.descripcion || '-'}</td><td>${c.gremios?.nombre || '-'}</td><td class="right">${fmt(c.monto)}</td></tr>`).join('')}
+    ${comprobantes.map(c => `<tr><td>${fmtFecha(c.fecha)}</td><td>${esc(c.descripcion || '-')}</td><td>${esc(c.gremios?.nombre || '-')}</td><td class="right">${fmt(c.monto)}</td></tr>`).join('')}
     </table>` : ''}
 
     ${notas.length > 0 ? `<h2>Notas</h2>
-    ${notas.map(n => `<div style="background:#f9fafb;border-radius:6px;padding:8px 12px;margin-bottom:4px"><p style="margin:0">${n.texto}</p><p style="margin:2px 0 0;color:#999;font-size:10px">${fmtFecha(n.created_at)}${n.gremios?.nombre ? ' · ' + n.gremios.nombre : ''}</p></div>`).join('')}` : ''}
+    ${notas.map(n => `<div style="background:#f9fafb;border-radius:6px;padding:8px 12px;margin-bottom:4px"><p style="margin:0">${esc(n.texto)}</p><p style="margin:2px 0 0;color:#999;font-size:10px">${fmtFecha(n.created_at)}${n.gremios?.nombre ? ' · ' + esc(n.gremios.nombre) : ''}</p></div>`).join('')}` : ''}
 
     ${alertas.length > 0 ? `<h2>Alertas</h2>
-    ${alertas.map(a => `<div style="background:${a.resuelta ? '#f0fdf4' : '#fef2f2'};border-radius:6px;padding:8px 12px;margin-bottom:4px"><p style="margin:0;${a.resuelta ? 'text-decoration:line-through;color:#999' : ''}">${a.descripcion}</p><p style="margin:2px 0 0;color:#999;font-size:10px">${fmtFecha(a.created_at)} · ${a.resuelta ? 'Resuelta' : 'Pendiente'}</p></div>`).join('')}` : ''}
+    ${alertas.map(a => `<div style="background:${a.resuelta ? '#f0fdf4' : '#fef2f2'};border-radius:6px;padding:8px 12px;margin-bottom:4px"><p style="margin:0;${a.resuelta ? 'text-decoration:line-through;color:#999' : ''}">${esc(a.descripcion)}</p><p style="margin:2px 0 0;color:#999;font-size:10px">${fmtFecha(a.created_at)} · ${a.resuelta ? 'Resuelta' : 'Pendiente'}</p></div>`).join('')}` : ''}
 
     <div class="footer">
       Generado el ${new Date().toLocaleDateString('es-AR')} · App Contratista · Soluciones MDP

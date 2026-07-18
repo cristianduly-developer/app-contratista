@@ -3,7 +3,10 @@ import { createClient } from '@supabase/supabase-js'
 const SAAS_URL = process.env.SAAS_ADMIN_URL || 'https://saas.solucionesmdp.com.ar'
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*')
+  const origin = req.headers['origin'] || ''
+  const allowed = process.env.APP_ORIGIN || 'https://contratista.solucionesmdp.com.ar'
+  const localDev = /^https?:\/\/localhost(:\d+)?$/.test(origin)
+  if (origin === allowed || localDev) res.setHeader('Access-Control-Allow-Origin', origin)
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type')
   if (req.method === 'OPTIONS') return res.status(200).end()

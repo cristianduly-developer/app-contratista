@@ -111,7 +111,7 @@ export default function App() {
           ) : pantalla === 'demo_vencido' ? (
             <div className="flex flex-col h-full overflow-y-auto items-center" style={{ background: '#0D0D14' }}>
               <div className="w-full max-w-md">
-                <SelectorPlanesMP orgId={orgIdBloqueo}
+                <SelectorPlanesMP
                   titulo="Tu prueba gratuita venció"
                   subtitulo="Activá un plan para seguir gestionando tus obras y gremios."
                   emoji="⏳"
@@ -121,7 +121,7 @@ export default function App() {
           ) : pantalla === 'suspendido' ? (
             <div className="flex flex-col h-full overflow-y-auto items-center" style={{ background: '#0D0D14' }}>
               <div className="w-full max-w-md">
-                <SelectorPlanesMP orgId={orgIdBloqueo}
+                <SelectorPlanesMP
                   titulo={estadoSus === 'impago' ? 'Suscripción vencida' : estadoSus === 'cancelado' ? 'Suscripción cancelada' : 'Cuenta suspendida'}
                   subtitulo={estadoSus === 'impago' ? 'Regularizá tu pago para reactivar el acceso.' : 'Reactivá tu suscripción para recuperar el acceso.'}
                   emoji={estadoSus === 'impago' ? '💳' : '🔒'}
@@ -310,7 +310,7 @@ function PantallaRegistro({ email, setSuscripcion, setOnboardingVisto }) {
   )
 }
 
-function SelectorPlanesMP({ orgId, titulo, subtitulo, emoji, onSignOut }) {
+function SelectorPlanesMP({ titulo, subtitulo, emoji, onSignOut }) {
   const [planes,   setPlanes]   = useState([])
   const [planSel,  setPlanSel]  = useState('profesional')
   const [cargando, setCargando] = useState(false)
@@ -335,13 +335,14 @@ function SelectorPlanesMP({ orgId, titulo, subtitulo, emoji, onSignOut }) {
   }, [])
 
   const pagar = async () => {
-    if (!orgId) { setError('No se encontró tu organización. Intentá de nuevo.'); return }
     setCargando(true); setError('')
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.access_token) { setError('Sesión expirada. Volvé a iniciar sesión.'); setCargando(false); return }
       const r = await fetch('/api/mp-pago-publico', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ org_id: orgId, plan: planSel }),
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        body: JSON.stringify({ plan: planSel }),
       })
       const data = await r.json()
       if (!r.ok || !data.init_point) { setError(data.error || 'Error al iniciar el pago.'); setCargando(false); return }

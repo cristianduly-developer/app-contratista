@@ -38,6 +38,7 @@ export function useAuth() {
   }
 
   async function logout() {
+    localStorage.removeItem('onboarding_seen')
     return supabase.auth.signOut()
   }
 

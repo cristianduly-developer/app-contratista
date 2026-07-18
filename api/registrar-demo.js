@@ -2,7 +2,9 @@ import { createClient } from '@supabase/supabase-js'
 
 const DEMO_DIAS = parseInt(process.env.DEMO_DIAS || '28', 10)
 const APP_ID    = 'app-contratista'
-const OWNER_ID  = 'd8eef2e2-7e07-4ec9-9c6e-766addf89cc5'
+const OWNER_ID  = process.env.OWNER_ID || 'd8eef2e2-7e07-4ec9-9c6e-766addf89cc5'
+
+const esc = s => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
 
 async function isRateLimited(central, ip) {
   try {
@@ -123,7 +125,7 @@ export default async function handler(req, res) {
           <p style="color:rgba(255,255,255,.85);margin:0;font-size:14px;">Soluciones MDP</p>
         </div>
         <div style="padding:32px 24px;">
-          <h2 style="margin:0 0 8px;font-size:20px;color:#111827;">¡Hola, ${nombre}!</h2>
+          <h2 style="margin:0 0 8px;font-size:20px;color:#111827;">¡Hola, ${esc(nombre)}!</h2>
           <p style="color:#374151;margin:0 0 24px;font-size:15px;line-height:1.6;">
             Tu prueba gratuita de <strong>${DEMO_DIAS} días</strong> ya está activa. Podés empezar a gestionar tus obras y gremios ahora mismo.
           </p>
@@ -168,8 +170,8 @@ export default async function handler(req, res) {
           subject: `🆕 Nueva cuenta demo — ${nombreGoogle ?? email}`,
           html: `<h2>🆕 Nueva cuenta demo en App Contratista</h2>
             <table style="border-collapse:collapse;font-family:sans-serif;">
-              <tr><td style="padding:8px;font-weight:bold;">Nombre</td><td style="padding:8px;">${nombreGoogle ?? '—'}</td></tr>
-              <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${email}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;">Nombre</td><td style="padding:8px;">${esc(nombreGoogle ?? '—')}</td></tr>
+              <tr><td style="padding:8px;font-weight:bold;">Email</td><td style="padding:8px;">${esc(email)}</td></tr>
               <tr><td style="padding:8px;font-weight:bold;">App</td><td style="padding:8px;">App Contratista</td></tr>
               <tr><td style="padding:8px;font-weight:bold;">Plan</td><td style="padding:8px;">Profesional (demo)</td></tr>
               <tr><td style="padding:8px;font-weight:bold;">Días de prueba</td><td style="padding:8px;">${DEMO_DIAS} días</td></tr>
