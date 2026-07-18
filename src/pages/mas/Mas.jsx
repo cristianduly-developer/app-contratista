@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Calculator, CreditCard, Settings, HelpCircle, MessageCircle } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { useAuth } from '../../lib/useAuth'
 
 const WA_SOPORTE = '5492236965481'
 
@@ -13,6 +14,9 @@ const ITEMS = [
 
 export default function Mas({ plan }) {
   const navigate = useNavigate()
+  const { user } = useAuth()
+
+  const waMsg = encodeURIComponent(`Hola! Necesito soporte para App Contratista. Mi email: ${user?.email || 'no disponible'}. El problema que tuve es: `)
 
   return (
     <div className="flex-1 overflow-y-auto pb-24 px-4 pt-12" style={{ background: '#0A0A0F' }}>
@@ -44,7 +48,7 @@ export default function Mas({ plan }) {
         ))}
       </div>
 
-      <a href={`https://wa.me/${WA_SOPORTE}?text=${encodeURIComponent('Hola, necesito ayuda con App Contratista')}`}
+      <a href={`https://wa.me/${WA_SOPORTE}?text=${waMsg}`}
         target="_blank" rel="noopener noreferrer"
         className="flex items-center gap-3 px-4 py-4 rounded-2xl mb-6"
         style={{ background: '#13131A', border: '1px solid #2A2A3A' }}>

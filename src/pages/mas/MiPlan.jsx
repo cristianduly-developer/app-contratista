@@ -190,7 +190,7 @@ export default function MiPlan() {
           El pago se procesa por Mercado Pago. Se renueva automáticamente cada mes.
         </p>
 
-        <a href={`https://wa.me/${WA_SOPORTE}?text=${encodeURIComponent('Hola, quiero consultar sobre mi plan de App Contratista')}`}
+        <a href={`https://wa.me/${WA_SOPORTE}?text=${encodeURIComponent(`Hola! Quiero consultar sobre mi plan de App Contratista. Mi email: ${user?.email || 'no disponible'}. El problema que tuve es: `)}`}
           target="_blank" rel="noopener noreferrer"
           className="w-full py-3 rounded-xl font-semibold text-[13px] flex items-center justify-center gap-2 mb-3"
           style={{ background: '#13131A', border: '1px solid #2A2A3A', color: '#9CA3AF' }}>
