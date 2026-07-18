@@ -38,6 +38,13 @@ export default function App() {
     () => !!localStorage.getItem('onboarding_seen')
   )
 
+  useEffect(() => {
+    if (!onboardingVisto && perfil?.nombre) {
+      localStorage.setItem('onboarding_seen', '1')
+      setOnboardingVisto(true)
+    }
+  }, [perfil, onboardingVisto])
+
   const verificar = useCallback(async () => {
     if (!user) { setSuscripcion(null); setCheckingAcceso(false); return }
     setCheckingAcceso(true)
