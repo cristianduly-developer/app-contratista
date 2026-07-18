@@ -9,12 +9,15 @@ async function findUserByEmail(supa, email) {
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
-  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-app-key')
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-app-key, x-internal-key')
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST') return res.status(405).json({ ok: false })
 
   const appKey = req.headers['x-app-key']
-  if (!process.env.ERROR_REPORT_KEY || appKey !== process.env.ERROR_REPORT_KEY) {
+  const internalKey = req.headers['x-internal-key']
+  const validAdmin = process.env.ADMIN_API_KEY && (appKey === process.env.ADMIN_API_KEY || internalKey === process.env.ADMIN_API_KEY)
+  const validInternal = process.env.INTERNAL_API_KEY && internalKey === process.env.INTERNAL_API_KEY
+  if (!validAdmin && !validInternal) {
     return res.status(401).json({ ok: false, error: 'no_auth' })
   }
 

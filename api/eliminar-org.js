@@ -24,9 +24,9 @@ export default async function handler(req, res) {
 
   const appKey = req.headers['x-app-key']
   const internalKey = req.headers['x-internal-key']
-  const validAppKey = process.env.ERROR_REPORT_KEY && appKey === process.env.ERROR_REPORT_KEY
+  const validAdmin = process.env.ADMIN_API_KEY && (appKey === process.env.ADMIN_API_KEY || internalKey === process.env.ADMIN_API_KEY)
   const validInternal = process.env.INTERNAL_API_KEY && internalKey === process.env.INTERNAL_API_KEY
-  if (!validAppKey && !validInternal) {
+  if (!validAdmin && !validInternal) {
     console.error('[eliminar-org] auth fail, x-app-key:', !!appKey, 'x-internal-key:', !!internalKey)
     return res.status(401).json({ ok: false, error: 'no_auth' })
   }
